@@ -15,6 +15,11 @@ import android.view.MenuItem;
 
 import sbingo.likecloudmusic.R;
 
+/**
+ * Author: Sbingo
+ * Date:   2016/12/11
+ */
+
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

@@ -1,13 +1,20 @@
 package sbingo.likecloudmusic.ui.activity;
 
-import android.app.Activity;
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.WindowManager;
 
+import com.readystatesoftware.systembartint.SystemBarTintManager;
+
+import butterknife.ButterKnife;
+import rx.Subscription;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.utils.RxUtils;
 
 /**
  * Author: Sbingo
@@ -26,11 +33,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract boolean hasToolbar();
 
+    protected Subscription mSubscription;
+
     protected Toolbar toolbar;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarTranslucent();
         setContentView(getLayoutId());
+        ButterKnife.bind(this);
         initToolbar();
         customToolbar();
         initInjector();
@@ -44,8 +56,24 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    protected void setStatusBarTranslucent() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setStatusBarTintResource(R.color.colorPrimary);
+        }
+    }
+
     protected void startActivityTo(Class a) {
         Intent intent = new Intent(this, a);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RxUtils.unSubscribe(mSubscription);
     }
 }

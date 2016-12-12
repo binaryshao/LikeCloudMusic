@@ -1,15 +1,23 @@
 package sbingo.likecloudmusic.ui.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 
-import butterknife.ButterKnife;
+import butterknife.BindView;
 import sbingo.likecloudmusic.R;
+
+/**
+ * Author: Sbingo
+ * Date:   2016/12/11
+ */
 
 public class LoadingActivity extends BaseActivity {
 
-    TextView loadingText;
+
+    @BindView(R.id.loading)
+    FrameLayout loading;
 
     @Override
     public int getLayoutId() {
@@ -23,7 +31,6 @@ public class LoadingActivity extends BaseActivity {
 
     @Override
     public void initViews() {
-        loadingText = ButterKnife.findById(this, R.id.loading_text);
     }
 
     @Override
@@ -39,13 +46,22 @@ public class LoadingActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadingText.postDelayed(toMainActivity, 1500);
+        loading.postDelayed(loadingOut, 1500);
     }
 
+    Runnable loadingOut = new Runnable() {
+        @Override
+        public void run() {
+            Animation animation = AnimationUtils.loadAnimation(LoadingActivity.this, R.anim.loading_fade_out);
+            loading.startAnimation(animation);
+            loading.postDelayed(toMainActivity, 2000);
+        }
+    };
     Runnable toMainActivity = new Runnable() {
         @Override
         public void run() {
             startActivityTo(MainActivity.class);
+            finish();
         }
     };
 }
