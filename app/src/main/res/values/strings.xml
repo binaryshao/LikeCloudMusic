@@ -1,11 +1,26 @@
 <resources>
-    <string name="app_name">LCM</string>
+    <string name="app_name">云音</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-
+    <!--加载页-->
     <string name="loading">是结束\n亦或新的开始\n……</string>
+    <!--导航目录-->
+    <string-array name="nav_menu">
+        <item name="message">我的消息</item>
+        <item name="member_center">会员中心</item>
+        <item name="shop">积分商城</item>
+        <item name="listen_online">在线听歌免流量</item>
+        <item name="identify_song">听歌识曲</item>
+        <item name="theme">主题换肤</item>
+        <item name="night_mode">夜间模式</item>
+        <item name="timing_stop">定时停止播放</item>
+        <item name="scan">扫一扫</item>
+        <item name="music_box">我的音乐云盒</item>
+        <item name="music_clock">音乐闹钟</item>
+        <item name="driving_mode">驾驶模式</item>
+    </string-array>
 
 </resources>

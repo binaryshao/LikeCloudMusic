@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import sbingo.likecloudmusic.R;
@@ -16,8 +17,8 @@ import sbingo.likecloudmusic.R;
 public class LoadingActivity extends BaseActivity {
 
 
-    @BindView(R.id.loading)
-    FrameLayout loading;
+    @BindView(R.id.loading_text)
+    TextView loadingText;
 
     @Override
     public int getLayoutId() {
@@ -46,21 +47,21 @@ public class LoadingActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loading.postDelayed(loadingOut, 1500);
+        loadingText.postDelayed(loadingOut, 1500);
     }
 
     Runnable loadingOut = new Runnable() {
         @Override
         public void run() {
             Animation animation = AnimationUtils.loadAnimation(LoadingActivity.this, R.anim.loading_fade_out);
-            loading.startAnimation(animation);
-            loading.postDelayed(toMainActivity, 2000);
+            loadingText.startAnimation(animation);
+            loadingText.postDelayed(toMainActivity, 2000);
         }
     };
     Runnable toMainActivity = new Runnable() {
         @Override
         public void run() {
-            startActivityTo(MainActivity.class);
+            openActivity(MainActivity.class);
             finish();
         }
     };
