@@ -32,7 +32,7 @@
         <item android:id="@+id/theme"
               app:actionLayout="@layout/menu_text"
               android:icon="@drawable/clothes"
-              android:title="theme"/>
+              android:title="@string/theme"/>
 
         <item android:id="@+id/night_mode"
               app:actionLayout="@layout/menu_night_switch"
