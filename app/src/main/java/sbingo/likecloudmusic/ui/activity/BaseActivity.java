@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.WindowManager;
@@ -35,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected Subscription mSubscription;
 
-    protected Toolbar toolbar;
+    protected ActionBar actionBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,8 +52,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void initToolbar() {
         if (hasToolbar()) {
-            toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+            setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+            actionBar = getSupportActionBar();
         }
     }
 
