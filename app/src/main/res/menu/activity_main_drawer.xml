@@ -1,36 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menu_1">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/message"
+            android:icon="@drawable/envelop"
+            android:title="@string/message"/>
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/member_center"
+            android:icon="@drawable/diamond"
+            android:title="@string/member_center"/>
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:id="@+id/shop"
+            app:actionLayout="@layout/menu_text"
+            android:icon="@drawable/shop"
+            android:title="@string/shop"/>
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/listen_online"
+            android:icon="@drawable/box"
+            android:title="@string/listen_online"/>
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
+    <group
+        android:id="@+id/menu_2">
+        <item android:id="@+id/identify_song"
+              android:icon="@drawable/mic"
+              android:title="@string/identify_song"/>
+
+        <item android:id="@+id/theme"
+              app:actionLayout="@layout/menu_text"
+              android:icon="@drawable/clothes"
+              android:title="theme"/>
+
+        <item android:id="@+id/night_mode"
+              app:actionLayout="@layout/menu_night_switch"
+              android:icon="@drawable/lamp"
+              android:title="@string/night_mode"/>
+
+        <item android:id="@+id/timing_stop"
+              android:icon="@drawable/timing"
+              android:title="@string/timing_stop"/>
+
+        <item android:id="@+id/scan"
+              android:icon="@drawable/scan"
+              android:title="@string/scan"/>
+
+        <item android:id="@+id/music_box"
+              android:icon="@drawable/cloud"
+              android:title="@string/music_box"/>
+
+        <item android:id="@+id/music_clock"
+              android:icon="@drawable/clock"
+              android:title="@string/music_clock"/>
+
+        <item android:id="@+id/driving_mode"
+              android:icon="@drawable/car"
+              android:title="@string/driving_mode"/>
+
+        <item
+              android:icon="@drawable/cry"
+              android:title="@string/placeholder"/>
+    </group>
 
 </menu>

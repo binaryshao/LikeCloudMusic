@@ -1,0 +1,34 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/white">
+
+    <TextView android:id="@+id/setting"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:background="?attr/selectableItemBackgroundBorderless"
+              android:gravity="center"
+              android:paddingBottom="@dimen/dp_18"
+              android:paddingTop="@dimen/dp_18"
+              android:text="@string/settings"
+              android:textColor="@color/black"/>
+
+    <View android:layout_width="1dp"
+          android:layout_height="match_parent"
+          android:layout_marginTop="@dimen/dp_10"
+          android:layout_marginBottom="10dp"
+          android:background="@color/alpha_50_black"/>
+
+    <TextView android:id="@+id/quit"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:background="?attr/selectableItemBackgroundBorderless"
+              android:gravity="center"
+              android:paddingBottom="@dimen/dp_18"
+              android:paddingTop="@dimen/dp_18"
+              android:text="@string/quit"
+              android:textColor="@color/black"/>
+
+</LinearLayout>

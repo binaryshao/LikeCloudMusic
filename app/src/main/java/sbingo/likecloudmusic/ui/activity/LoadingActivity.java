@@ -47,7 +47,7 @@ public class LoadingActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadingText.postDelayed(loadingOut, 1500);
+        loadingText.postDelayed(loadingOut, 1000);
     }
 
     Runnable loadingOut = new Runnable() {
@@ -55,7 +55,7 @@ public class LoadingActivity extends BaseActivity {
         public void run() {
             Animation animation = AnimationUtils.loadAnimation(LoadingActivity.this, R.anim.loading_fade_out);
             loadingText.startAnimation(animation);
-            loadingText.postDelayed(toMainActivity, 2000);
+            loadingText.postDelayed(toMainActivity, 1500);
         }
     };
     Runnable toMainActivity = new Runnable() {
