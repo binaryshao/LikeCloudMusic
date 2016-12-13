@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,6 +86,7 @@ public class MainActivity extends BaseActivity
 
         navView.setNavigationItemSelectedListener(this);
         navView.setItemIconTintList(null);
+        navView.getChildAt(0).setVerticalScrollBarEnabled(false);
 
         //HeaderView内的控件
         avatar = (ImageView) navView.getHeaderView(0).findViewById(R.id.avatar);
@@ -110,9 +112,11 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void customToolbar() {
-        radioGroup = (RadioGroup) LayoutInflater.from(this).inflate(R.layout.main_radio_group, null);
-        actionBar.setCustomView(radioGroup, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        radioGroup = (RadioGroup) LayoutInflater.from(this).inflate(R.layout.main_radio_group, null);
+        radioGroup.setHorizontalGravity(Gravity.CENTER_HORIZONTAL);
+        actionBar.setCustomView(radioGroup, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override

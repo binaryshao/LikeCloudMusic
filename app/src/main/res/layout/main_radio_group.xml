@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:orientation="horizontal">
 
-    <RadioButton android:id="@+id/net_music"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:background="@drawable/net_music_selector"
-                 android:button="@null"
-                 android:checked="true"
-                 android:gravity="center"
-                 android:paddingLeft="@dimen/dp_15"
-                 android:paddingRight="@dimen/dp_15"/>
-    <RadioButton android:id="@+id/local_music"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:background="@drawable/local_music_selector"
-                 android:button="@null"
-                 android:gravity="center"
-                 android:paddingLeft="@dimen/dp_15"
-                 android:paddingRight="@dimen/dp_15"/>
-    <RadioButton android:id="@+id/social"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:background="@drawable/social_selector"
-                 android:button="@null"
-                 android:gravity="center"
-                 android:paddingLeft="@dimen/dp_15"
-                 android:paddingRight="@dimen/dp_15"/>
+    <RadioButton
+        android:id="@+id/net_music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@drawable/net_music_selector"
+        android:checked="true"
+        android:gravity="center" />
+
+    <RadioButton
+        android:id="@+id/local_music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_25"
+        android:layout_marginRight="@dimen/dp_25"
+        android:button="@drawable/local_music_selector"
+        android:gravity="center" />
+
+    <RadioButton
+        android:id="@+id/social"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@drawable/social_selector"
+        android:gravity="center" />
 </RadioGroup>
