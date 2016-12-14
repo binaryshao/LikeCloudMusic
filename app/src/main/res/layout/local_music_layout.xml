@@ -1,12 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:text="本地歌曲"
-              android:gravity="center"
-              android:textSize="@dimen/sp_30"/>
+    <sbingo.likecloudmusic.widget.LocalMenuItem
+        android:id="@+id/local"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/car"
+        app:title="@string/local" />
+
+    <sbingo.likecloudmusic.widget.LocalMenuItem
+        android:id="@+id/recent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/car"
+        app:title="@string/recent" />
+
+    <sbingo.likecloudmusic.widget.LocalMenuItem
+        android:id="@+id/download"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/car"
+        app:title="@string/download" />
+
+    <sbingo.likecloudmusic.widget.LocalMenuItem
+        android:id="@+id/my_singers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/car"
+        app:title="@string/my_singers" />
+
+    <sbingo.likecloudmusic.widget.LocalMenuItem
+        android:id="@+id/MV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/car"
+        app:title="@string/MV" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="本地歌曲"
+        android:textSize="@dimen/sp_30" />
 </LinearLayout>
