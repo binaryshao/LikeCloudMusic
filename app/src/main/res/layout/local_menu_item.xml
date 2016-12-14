@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_50">
+    android:layout_height="@dimen/dp_55">
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="@dimen/dp_45"
-        android:layout_height="@dimen/dp_45"
+        android:layout_width="@dimen/dp_22"
+        android:layout_height="@dimen/dp_22"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_16"
         android:scaleType="centerCrop" />
 
     <TextView
@@ -35,17 +35,19 @@
 
     <ImageView
         android:id="@+id/speaker"
-        android:layout_width="@dimen/dp_20"
-        android:layout_height="@dimen/dp_20"
+        android:layout_width="@dimen/dp_22"
+        android:layout_height="@dimen/dp_22"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/dp_10"
-        android:src="@drawable/mic" />
+        android:src="@drawable/speaker"
+        android:visibility="gone" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
+        android:layout_height="@dimen/divider_height"
+        android:layout_alignLeft="@id/title"
         android:layout_alignParentBottom="true"
-        android:background="@color/divider" />
+        android:background="@color/divider_color" />
 
 </RelativeLayout>

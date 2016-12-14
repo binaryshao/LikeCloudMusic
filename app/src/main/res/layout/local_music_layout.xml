@@ -9,41 +9,35 @@
         android:id="@+id/local"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:icon="@drawable/car"
+        app:icon="@drawable/mobile_45"
         app:title="@string/local" />
 
     <sbingo.likecloudmusic.widget.LocalMenuItem
         android:id="@+id/recent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:icon="@drawable/car"
+        app:icon="@drawable/clock_45"
         app:title="@string/recent" />
 
     <sbingo.likecloudmusic.widget.LocalMenuItem
         android:id="@+id/download"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:icon="@drawable/car"
+        app:icon="@drawable/download_45"
         app:title="@string/download" />
 
     <sbingo.likecloudmusic.widget.LocalMenuItem
         android:id="@+id/my_singers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:icon="@drawable/car"
+        app:icon="@drawable/singer_45"
         app:title="@string/my_singers" />
 
     <sbingo.likecloudmusic.widget.LocalMenuItem
-        android:id="@+id/MV"
+        android:id="@+id/mv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:icon="@drawable/car"
+        app:icon="@drawable/mv_45"
         app:title="@string/MV" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="本地歌曲"
-        android:textSize="@dimen/sp_30" />
 </LinearLayout>

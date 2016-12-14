@@ -194,11 +194,6 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     //播放控制器
     class MyPlayerListener implements OutPlayerController.OutPlayerControllerListener {
 

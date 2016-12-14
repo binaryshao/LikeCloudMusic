@@ -7,7 +7,7 @@
     <color name="item_background">#F2F4F5</color>
     <color name="primary_text">#999999</color>
     <color name="transparent">#00000000</color>
-    <color name="divider">@color/alpha_25_black</color>
+    <color name="divider_color">@color/alpha_25_black</color>
 
     <color name="alpha_05_white">#0DFFFFFF</color>
     <color name="alpha_10_white">#1AFFFFFF</color>
