@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_50"
+                    android:paddingLeft="@dimen/dp_10"
+                    android:paddingRight="@dimen/dp_10">
+
+        <ImageView android:id="@+id/thumb"
+                   android:layout_width="@dimen/dp_45"
+                   android:layout_height="@dimen/dp_45"
+                   android:layout_centerVertical="true"
+                   android:scaleType="centerCrop"
+                   tools:src="@drawable/message"/>
+
+        <ImageView android:id="@+id/next"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentRight="true"
+                   android:layout_centerVertical="true"
+                   android:src="@drawable/next"/>
+
+        <ImageView android:id="@+id/play"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_centerVertical="true"
+                   android:layout_toLeftOf="@id/next"
+                   android:paddingLeft="@dimen/dp_15"
+                   android:paddingRight="@dimen/dp_15"
+                   android:src="@drawable/play"/>
+
+        <ImageView android:id="@+id/play_list"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_centerVertical="true"
+                   android:layout_toLeftOf="@id/play"
+                   android:src="@drawable/list"/>
+
+        <LinearLayout android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:layout_marginLeft="@dimen/dp_10"
+                      android:layout_toLeftOf="@id/play_list"
+                      android:layout_toRightOf="@id/thumb"
+                      android:gravity="center_vertical"
+                      android:orientation="vertical">
+
+            <TextView android:id="@+id/song"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textColor="@color/black"
+                      tools:text="红玫瑰"/>
+
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_marginTop="@dimen/dp_10"
+                      android:textColor="@color/alpha_35_black"
+                      tools:text="陈奕迅"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ProgressBar android:id="@+id/play_progress"
+                 style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                 android:layout_width="match_parent"
+                 android:layout_height="1dp"/>
+</LinearLayout>

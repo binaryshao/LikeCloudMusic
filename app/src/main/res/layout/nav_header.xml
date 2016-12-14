@@ -4,10 +4,10 @@
               android:layout_width="match_parent"
               android:layout_height="@dimen/nav_header_height"
               android:background="@drawable/side_nav_bar"
-              android:orientation="vertical"
               android:gravity="bottom"
-              android:paddingLeft="@dimen/horizontal_margin"
-              android:paddingRight="@dimen/horizontal_margin"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/dp_16"
+              android:paddingRight="@dimen/dp_16"
               android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
@@ -22,15 +22,15 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:gravity="center"
-            android:layout_height="45dp">
+            android:layout_height="45dp"
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sbingo"
-                android:textSize="15dp"/>
+                android:textSize="@dimen/sp_16"/>
 
             <TextView
                 android:id="@+id/level"
@@ -39,7 +39,7 @@
                 android:layout_marginLeft="@dimen/dp_5"
                 android:background="@drawable/stroke_white"
                 android:text="Lv.5"
-                android:textSize="10dp"/>
+                android:textSize="@dimen/sp_10"/>
         </LinearLayout>
 
         <TextView
@@ -47,7 +47,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|center"
-            android:text="签到"/>
+            android:text="签到"
+            android:textSize="@dimen/sp_16"/>
     </FrameLayout>
 
 </LinearLayout>

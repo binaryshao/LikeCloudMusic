@@ -18,7 +18,7 @@
         android:background="@drawable/loading"
         android:textColor="@color/colorPrimary"
         android:text="@string/loading"
-        android:paddingBottom="@dimen/vertical_margin"
+        android:paddingBottom="@dimen/dp_16"
         android:textSize="30sp"/>
 
 </FrameLayout>
