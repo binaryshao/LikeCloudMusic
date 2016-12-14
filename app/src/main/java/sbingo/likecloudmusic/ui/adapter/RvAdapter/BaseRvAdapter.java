@@ -1,4 +1,4 @@
-package sbingo.likecloudmusic.ui.adapter;
+package sbingo.likecloudmusic.ui.adapter.RvAdapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;

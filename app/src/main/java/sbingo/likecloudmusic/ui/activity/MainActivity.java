@@ -6,6 +6,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,13 +20,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
 import sbingo.likecloudmusic.utils.RemindUtils;
+import sbingo.likecloudmusic.widget.OutPlayerController;
 
 /**
  * Author: Sbingo
@@ -47,6 +51,10 @@ public class MainActivity extends BaseActivity
     TextView quit;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.main_view_pager)
+    ViewPager mainViewPager;
+    @BindView(R.id.player_controller)
+    OutPlayerController playerController;
 
     ImageView avatar;
     TextView name;
@@ -58,6 +66,10 @@ public class MainActivity extends BaseActivity
     SwitchCompat nightSwitch;
 
     RadioGroup radioGroup;
+
+    boolean fromViewPager;
+    boolean fromRadioGroup;
+
 
     @Override
     public int getLayoutId() {
@@ -84,6 +96,13 @@ public class MainActivity extends BaseActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        initNavigation();
+        initRadioGroup();
+        initViewPager();
+        playerController.setPlayerListener(new MyPlayerListener());
+    }
+
+    void initNavigation() {
         navView.setNavigationItemSelectedListener(this);
         navView.setItemIconTintList(null);
         navView.getChildAt(0).setVerticalScrollBarEnabled(false);
@@ -110,6 +129,57 @@ public class MainActivity extends BaseActivity
     }
 
 
+    void initRadioGroup() {
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (fromViewPager) {
+                    fromViewPager = false;
+                    return;
+                }
+                fromRadioGroup = true;
+                switch (checkedId) {
+                    case R.id.net_music:
+                        mainViewPager.setCurrentItem(0, true);
+                        break;
+                    case R.id.local_music:
+                        mainViewPager.setCurrentItem(1, true);
+                        break;
+                    case R.id.social:
+                        mainViewPager.setCurrentItem(2, true);
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+
+    void initViewPager() {
+        mainViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        mainViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (fromRadioGroup) {
+                    fromRadioGroup = false;
+                    return;
+                }
+                fromViewPager = true;
+                ((RadioButton) radioGroup.getChildAt(position)).setChecked(true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        mainViewPager.setCurrentItem(1);
+    }
+
     @Override
     public void customToolbar() {
         actionBar.setDisplayShowTitleEnabled(false);
@@ -127,6 +197,34 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    //播放控制器
+    class MyPlayerListener implements OutPlayerController.OutPlayerControllerListener {
+
+        @Override
+        public void play() {
+            if (playerController.isPlaying()) {
+                RemindUtils.showToast("播放");
+            } else {
+                RemindUtils.showToast("暂停");
+            }
+        }
+
+        @Override
+        public void next() {
+            RemindUtils.showToast("下一首");
+        }
+
+        @Override
+        public void playList() {
+            RemindUtils.showToast("播放列表");
+        }
+
+        @Override
+        public void controller() {
+            RemindUtils.showToast("播放详情");
+        }
     }
 
     @Override
@@ -153,7 +251,6 @@ public class MainActivity extends BaseActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.search) {
-            RemindUtils.makeSnackbar(fab, "搜搜搜", "取消", null).show();
             return true;
         }
 

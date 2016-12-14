@@ -25,6 +25,27 @@
     <string name="settings">设置</string>
     <string name="quit">退出应用</string>
 
+    <!--本地-->
+    <string name="local">本地音乐</string>
+    <string name="recent">最近播放</string>
+    <string name="download">下载管理</string>
+    <string name="my_singers">我的歌手</string>
+    <string name="MV">我的MV</string>
 
+    <!--本地音乐-->
+    <string-array name="local">
+        <item name="song">单曲</item>
+        <item name="singers">歌手</item>
+        <item name="album">专辑</item>
+        <item name="folders">文件夹</item>
+    </string-array>
+
+    <!--下载管理-->
+    <string-array name="download">
+        <item name="song">单曲</item>
+        <item name="radio">电台节目</item>
+        <item name="MV">MV</item>
+        <item name="downloading">下载中</item>
+    </string-array>
 
 </resources>
