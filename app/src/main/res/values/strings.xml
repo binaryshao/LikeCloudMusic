@@ -5,6 +5,11 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="search">Search</string>
+    <!--测试用-->
+    <string name="singer_test">陈奕迅</string>
+    <string name="song_test">红玫瑰</string>
+    <string name="info_test">2016跨世界粤语精选</string>
+
     <!--加载页-->
     <string name="loading">是结束\n亦或新的开始\n……</string>
     <!--导航目录-->
@@ -48,5 +53,13 @@
         <item name="downloading">下载中</item>
     </string-array>
 
+    <!--本地音乐菜单-->
+    <string name="scan_music">扫描本地音乐</string>
+    <string name="sort">选择排序方式</string>
+    <string name="cover_lyric">获取封面歌词</string>
+    <string name="upgrade_quality">升级音质</string>
+
     <string name="list_count">创建的歌单 (%1$d)</string>
+
+    <string name="disk_count">%1$d首</string>
 </resources>

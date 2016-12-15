@@ -182,7 +182,6 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void customToolbar() {
-        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         radioGroup = (RadioGroup) LayoutInflater.from(this).inflate(R.layout.main_radio_group, null);
         radioGroup.setHorizontalGravity(Gravity.CENTER_HORIZONTAL);

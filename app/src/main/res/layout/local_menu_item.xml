@@ -47,7 +47,8 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/dp_10"
         android:src="@drawable/speaker"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <View
         android:layout_width="match_parent"

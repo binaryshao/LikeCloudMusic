@@ -2,6 +2,7 @@ package sbingo.likecloudmusic.ui.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -50,6 +51,11 @@ public abstract class BaseFragment extends Fragment {
             initInjector();
         }
         return mFragmentView;
+    }
+
+    protected void openActivity(Class a) {
+        Intent intent = new Intent(mContext, a);
+        startActivity(intent);
     }
 
     @Override

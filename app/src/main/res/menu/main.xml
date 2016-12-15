@@ -7,4 +7,6 @@
         android:title="@string/search"
         android:icon="@drawable/search"
         app:showAsAction="always"/>
+
+
 </menu>

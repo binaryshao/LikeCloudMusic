@@ -2,51 +2,44 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="sbingo.likecloudmusic.ui.activity.MainActivity">
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
-
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:contentInsetEnd="@dimen/dp_0"
-            android:contentInsetLeft="@dimen/dp_0"
-            android:contentInsetRight="@dimen/dp_0"
-            android:contentInsetStart="@dimen/dp_0"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/local">
 
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/main_view_pager"
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/out_player_controller"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
 
     <sbingo.likecloudmusic.widget.OutPlayerController
         android:id="@+id/player_controller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/dp_16"
-        android:visibility="gone"
-        app:srcCompat="@android:drawable/ic_dialog_email"/>
 
 </android.support.design.widget.CoordinatorLayout>

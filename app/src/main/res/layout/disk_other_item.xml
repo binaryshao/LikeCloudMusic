@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_55"
+                android:background="?attr/selectableItemBackground"
+                android:paddingLeft="@dimen/dp_10"
+                android:paddingRight="@dimen/dp_10">
+
+    <ImageView
+        android:id="@+id/thumb"
+        android:layout_width="@dimen/dp_45"
+        android:layout_height="@dimen/dp_45"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/avatar"/>
+    <FrameLayout android:id="@+id/right"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentRight="true"
+                 android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/more_40"/>
+
+        <ImageView
+            android:id="@+id/speaker"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_10"
+            android:src="@drawable/speaker"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+    </FrameLayout>
+
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:layout_toLeftOf="@id/right"
+                    android:layout_toRightOf="@id/thumb">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primary_heavy_text"
+            tools:text="@string/singer_test"/>
+
+        <TextView android:id="@+id/count"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_below="@id/title"
+                  android:layout_marginTop="@dimen/dp_10"
+                  android:textColor="@color/primary_light_text"
+                  tools:text="@string/disk_count"/>
+
+        <TextView android:id="@+id/info"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignTop="@id/count"
+                  android:layout_marginLeft="@dimen/dp_10"
+                  android:layout_toRightOf="@id/count"
+                  android:textColor="@color/primary_light_text"
+                  tools:text="@string/song_test"/>
+    </RelativeLayout>
+</RelativeLayout>

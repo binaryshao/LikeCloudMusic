@@ -15,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.ui.activity.ScanMusicActivity;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
 import sbingo.likecloudmusic.utils.RemindUtils;
 import sbingo.likecloudmusic.widget.LocalMenuItem;
@@ -106,6 +107,7 @@ public class LocalMusicFragment extends BaseFragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.local:
+                openActivity(ScanMusicActivity.class);
                 break;
             case R.id.recent:
                 break;
@@ -131,14 +133,6 @@ public class LocalMusicFragment extends BaseFragment {
         tempDegrees = fromDegrees;
         fromDegrees = toDegrees;
         toDegrees = tempDegrees;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // TODO: inflate a fragment view
-        View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        ButterKnife.bind(this, rootView);
-        return rootView;
     }
 
 }

@@ -3,7 +3,7 @@
               xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
+              android:layout_height="@dimen/out_player_controller"
               android:background="@color/heavy_background"
               android:orientation="vertical">
 
@@ -18,7 +18,7 @@
                    android:layout_height="@dimen/dp_45"
                    android:layout_centerVertical="true"
                    android:scaleType="centerCrop"
-                   tools:src="@drawable/message"/>
+                   tools:src="@drawable/avatar"/>
 
         <ImageView android:id="@+id/next"
                    android:layout_width="wrap_content"

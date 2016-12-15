@@ -1,6 +1,7 @@
 package sbingo.likecloudmusic.utils;
 
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
+import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
 import sbingo.likecloudmusic.ui.fragment.LocalMusic.LocalMusicFragment;
 import sbingo.likecloudmusic.ui.fragment.NetMusic.NetMusicFragment;
 import sbingo.likecloudmusic.ui.fragment.NetMusic.PlaylistFragment;
@@ -24,4 +25,5 @@ public class NavigationUtils {
     public static BaseFragment[] netMusicFragments = {RecommendFragment.getInstance(), PlaylistFragment.getInstance(), RadioFragment.getInstance(), RankingFragment.getInstance()};
 
     public static BaseFragment[] socialFragments = {NewStateFragment.getInstance(), NearbyFragment.getInstance(), FriendsFragment.getInstance()};
+
 }
