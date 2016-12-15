@@ -1,43 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_refresh"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <sbingo.likecloudmusic.widget.LocalMenuItem
-        android:id="@+id/local"
+    android:background="@color/whole_background">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/mobile_45"
-        app:title="@string/local" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <sbingo.likecloudmusic.widget.LocalMenuItem
-        android:id="@+id/recent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/clock_45"
-        app:title="@string/recent" />
+        <sbingo.likecloudmusic.widget.LocalMenuItem
+            android:id="@+id/local"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/mobile_45"
+            app:title="@string/local"/>
 
-    <sbingo.likecloudmusic.widget.LocalMenuItem
-        android:id="@+id/download"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/download_45"
-        app:title="@string/download" />
+        <sbingo.likecloudmusic.widget.LocalMenuItem
+            android:id="@+id/recent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/clock_45"
+            app:title="@string/recent"/>
 
-    <sbingo.likecloudmusic.widget.LocalMenuItem
-        android:id="@+id/my_singers"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/singer_45"
-        app:title="@string/my_singers" />
+        <sbingo.likecloudmusic.widget.LocalMenuItem
+            android:id="@+id/download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/download_45"
+            app:title="@string/download"/>
 
-    <sbingo.likecloudmusic.widget.LocalMenuItem
-        android:id="@+id/mv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/mv_45"
-        app:title="@string/MV" />
+        <sbingo.likecloudmusic.widget.LocalMenuItem
+            android:id="@+id/my_singers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/singer_45"
+            app:title="@string/my_singers"/>
 
-</LinearLayout>
+        <sbingo.likecloudmusic.widget.LocalMenuItem
+            android:id="@+id/mv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/mv_45"
+            app:title="@string/MV"/>
+
+        <RelativeLayout android:id="@+id/play_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_10">
+
+            <ImageView android:id="@+id/arrow"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_centerVertical="true"
+                       android:src="@drawable/right_arrow_40"/>
+
+            <TextView android:id="@+id/list_count"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_centerVertical="true"
+                      android:layout_marginLeft="@dimen/dp_10"
+                      android:layout_toRightOf="@id/arrow"
+                      android:text="@string/list_count"
+                      android:textColor="@color/primary_middle_text"/>
+
+            <ImageView android:id="@+id/list_more"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentRight="true"
+                       android:layout_centerVertical="true"
+                       android:src="@drawable/more_40"/>
+
+        </RelativeLayout>
+
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:background="@color/item_background"
+                  android:gravity="center"
+                  android:text="云上的歌单"
+                  android:textColor="@color/primary_heavy_text"/>
+    </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

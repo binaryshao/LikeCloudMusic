@@ -48,4 +48,5 @@
         <item name="downloading">下载中</item>
     </string-array>
 
+    <string name="list_count">创建的歌单 (%1$d)</string>
 </resources>

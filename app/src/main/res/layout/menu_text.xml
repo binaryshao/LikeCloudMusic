@@ -5,6 +5,6 @@
           android:gravity="right|center_vertical"
           android:text="官方红"
           android:textSize="@dimen/dp_10"
-          android:textColor="@color/primary_text">
+          android:textColor="@color/primary_light_text">
 
 </TextView>

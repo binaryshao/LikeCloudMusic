@@ -68,8 +68,8 @@ public class LocalMenuItem extends FrameLayout {
         speaker.setVisibility(GONE);
     }
 
-    public void setCount(String s) {
-        count.setText(s);
+    public void setCount(int s) {
+        count.setText("(" + String.valueOf(s) + ")");
     }
 
 }
