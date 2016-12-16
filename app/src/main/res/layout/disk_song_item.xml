@@ -28,7 +28,7 @@
                    android:layout_alignParentRight="true"
                    android:src="@drawable/mv_64"/>
 
-        <TextView android:id="@id/song_name"
+        <TextView android:id="@+id/song_name"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_alignParentLeft="true"
@@ -37,7 +37,7 @@
                   android:lines="1"
                   android:textColor="@color/primary_heavy_text"
                   android:textSize="@dimen/sp_14"
-                  tools:text="减肥的空间里的顾忌估计的发个梵蒂复健科的根据地方官匪勾结的风格 改动孤独鳏寡的 冈"/>
+                  tools:text="减肥的空间里的顾忌估计的发个梵蒂复健科的根据地方官匪勾"/>
 
         <TextView android:id="@+id/info"
                   android:layout_width="wrap_content"
