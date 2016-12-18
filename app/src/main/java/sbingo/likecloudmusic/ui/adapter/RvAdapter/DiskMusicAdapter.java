@@ -22,15 +22,27 @@ import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
 
 public class DiskMusicAdapter extends BaseRvAdapter<Song> {
 
-    DiskMusicFragment fragment;
+    private int currentType;
 
     private Context mContext;
+
+    private DiskMusicListener listener;
+    public interface DiskMusicListener{
+
+    }
+
+    public DiskMusicAdapter(int currentType, DiskMusicListener listener, Context mContext) {
+        this.currentType = currentType;
+        this.listener = listener;
+        this.mContext = mContext;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (fragment.getType() == 1) {
+        if (currentType == 1) {
             return new SongHolder(LayoutInflater.from(mContext).inflate(R.layout.disk_song_item, null));
         } else {
-            return new SongHolder(LayoutInflater.from(mContext).inflate(R.layout.disk_other_item, null));
+            return new OtherHolder(LayoutInflater.from(mContext).inflate(R.layout.disk_other_item, null));
         }
     }
 
@@ -38,12 +50,6 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
     }
-
-    @Override
-    public int getItemViewType(int position) {
-        return fragment.getType();
-    }
-
 
      class OtherHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.thumb)
