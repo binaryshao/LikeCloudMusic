@@ -3,12 +3,15 @@ package sbingo.likecloudmusic.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.litepal.annotation.Column;
+import org.litepal.crud.DataSupport;
+
 /**
  * Author: Sbingo
  * Date:   2016/12/15
  */
 
-public class Song implements Parcelable {
+public class Song extends DataSupport implements Parcelable {
 
     private int id;
 
@@ -20,6 +23,7 @@ public class Song implements Parcelable {
 
     private String album;
 
+    @Column(unique = true)
     private String path;
 
     private int duration;
@@ -27,6 +31,8 @@ public class Song implements Parcelable {
     private int size;
 
     private boolean favorite;
+
+    private boolean isPlaying;
 
     public int getId() {
         return id;
@@ -100,6 +106,14 @@ public class Song implements Parcelable {
         this.favorite = favorite;
     }
 
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
+
     public static Creator<Song> getCREATOR() {
         return CREATOR;
     }
@@ -122,6 +136,7 @@ public class Song implements Parcelable {
         dest.writeInt(this.duration);
         dest.writeInt(this.size);
         dest.writeInt(this.favorite ? 1 : 0);
+        dest.writeInt(this.isPlaying ? 1 : 0);
     }
 
     public void readFromParcel(Parcel in) {
@@ -134,6 +149,7 @@ public class Song implements Parcelable {
         this.duration = in.readInt();
         this.size = in.readInt();
         this.favorite = in.readInt() == 1;
+        this.isPlaying = in.readInt() == 1;
     }
 
     @Override

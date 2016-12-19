@@ -1,36 +1,36 @@
 package sbingo.likecloudmusic.ui.fragment.LocalMusic;
 
-import android.media.MediaPlayer;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.IOException;
+import com.orhanobut.logger.Logger;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
-import sbingo.likecloudmusic.di.component.DaggerDiskMusicComponent;
-import sbingo.likecloudmusic.di.component.FragmentComponent;
-import sbingo.likecloudmusic.di.module.DiskMusicModule;
-import sbingo.likecloudmusic.interactor.DiskMusicInteractor;
+import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.event.MusicChangeEvent;
+import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.presenter.DiskMusicPresenter;
 import sbingo.likecloudmusic.ui.adapter.RvAdapter.DiskMusicAdapter;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
 import sbingo.likecloudmusic.ui.view.DiskMusicView;
 import sbingo.likecloudmusic.utils.FileUtils;
+import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 
 /**
@@ -84,7 +84,41 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
 //        }
 //        player.start();
         mAdapter.setList(songs);
-        mPresenter.loadLocalMusic();
+        if (PreferenceUtils.getBoolean(getActivity(), Constants.IS_SCANNED)) {
+            Logger.d("loadMusicFromDB");
+            loadMusicFromDB();
+        } else {
+            Logger.d("loadMusicFromDisk");
+            mPresenter.loadMusicFromDisk();
+        }
+    }
+
+    private void loadMusicFromDB() {
+        Observable.just(LitePalHelper.querySongs())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Song>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        showMsg(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<Song> songs) {
+                        hideLoading();
+                        if (songs.isEmpty()) {
+                            showEmptyView();
+                        } else {
+                            onMusicLoaded(songs);
+                        }
+                        RxBus.getInstance().post(new MusicChangeEvent(songs.size()));
+                    }
+                });
     }
 
     @Override
@@ -114,6 +148,16 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
 
     @OnClick(R.id.scan_disk)
     public void onClick() {
-        mPresenter.loadLocalMusic();
+        mPresenter.loadMusicFromDisk();
+    }
+
+    @Override
+    public void toPlayerActivity(Song song) {
+
+    }
+
+    @Override
+    public void playMusic(Song song) {
+
     }
 }

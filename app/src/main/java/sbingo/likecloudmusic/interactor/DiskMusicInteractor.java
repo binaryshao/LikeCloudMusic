@@ -18,8 +18,12 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import sbingo.likecloudmusic.bean.Song;
+import sbingo.likecloudmusic.common.Constants;
+import sbingo.likecloudmusic.common.MyApplication;
+import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.presenter.DiskMusicPresenter;
 import sbingo.likecloudmusic.utils.FileUtils;
+import sbingo.likecloudmusic.utils.PreferenceUtils;
 
 /**
  * Author: Sbingo
@@ -45,6 +49,7 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
                                 songs.add(song);
                             } while (cursor.moveToNext());
                         }
+                        LitePalHelper.InsertSongs(songs);
                         return Observable.just(songs);
                     }
                 })
@@ -69,6 +74,7 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
 
                     @Override
                     public void onCompleted() {
+                        PreferenceUtils.putBoolean(MyApplication.getAppContext(), Constants.IS_SCANNED, true);
                     }
 
                     @Override

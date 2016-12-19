@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_55"
-                android:paddingLeft="@dimen/dp_10"
-                android:paddingRight="@dimen/dp_10">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_70"
+    android:paddingLeft="@dimen/dp_16">
 
     <ImageView
         android:id="@+id/speaker"
@@ -14,7 +13,7 @@
         android:layout_marginRight="@dimen/dp_10"
         android:src="@drawable/speaker"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/more"
@@ -23,40 +22,51 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/dp_10"
-        android:src="@drawable/more_40"/>
+        android:layout_marginRight="@dimen/dp_16"
+        android:src="@drawable/more_40" />
 
-    <RelativeLayout android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/more"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/speaker">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_alignParentBottom="true"
+        android:background="@color/divider_color" />
 
-        <ImageView android:id="@+id/mv"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentRight="true"
-                   android:src="@drawable/mv_64"/>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/more"
+        android:layout_toRightOf="@id/speaker">
 
-        <TextView android:id="@+id/song_name"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignParentLeft="true"
-                  android:layout_toLeftOf="@id/mv"
-                  android:ellipsize="end"
-                  android:lines="1"
-                  android:textColor="@color/primary_heavy_text"
-                  android:textSize="@dimen/sp_14"
-                  tools:text="减肥的空间里的顾忌估计的发个梵蒂复健科的根据地方官匪勾"/>
+        <ImageView
+            android:id="@+id/mv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/mv_64" />
 
-        <TextView android:id="@+id/info"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_below="@id/song_name"
-                  android:layout_marginTop="@dimen/dp_5"
-                  android:drawableLeft="@drawable/yes_30"
-                  android:drawablePadding="@dimen/dp_5"
-                  android:textSize="@dimen/sp_12"
-                  tools:text="@string/info_test"/>
+        <TextView
+            android:id="@+id/song_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/mv"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/primary_heavy_text"
+            android:textSize="@dimen/sp_14"
+            tools:text="减肥的空间里的顾忌估计的发个梵蒂复健科的根据地方官匪勾" />
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/song_name"
+            android:layout_marginTop="@dimen/dp_5"
+            android:drawableLeft="@drawable/yes_30"
+            android:drawablePadding="@dimen/dp_5"
+            android:textSize="@dimen/sp_12"
+            tools:text="@string/info_test" />
     </RelativeLayout>
 
 

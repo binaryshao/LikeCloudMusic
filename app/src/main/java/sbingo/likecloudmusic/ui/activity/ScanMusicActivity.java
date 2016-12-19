@@ -14,18 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.LocalPagerAdapter;
 import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
 import sbingo.likecloudmusic.utils.RemindUtils;
+import sbingo.likecloudmusic.widget.OutPlayerController;
 
 /**
  * Author: Sbingo
  * Date:   2016/12/15
  */
 
-public class ScanMusicActivity extends BaseActivity {
+public class ScanMusicActivity extends BaseActivity implements OutPlayerController.OutPlayerControllerListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -33,6 +35,8 @@ public class ScanMusicActivity extends BaseActivity {
     TabLayout tabs;
     @BindView(R.id.view_pager)
     ViewPager viewPager;
+    @BindView(R.id.player_controller)
+    OutPlayerController playerController;
 
     @Override
     protected int getLayoutId() {
@@ -47,6 +51,7 @@ public class ScanMusicActivity extends BaseActivity {
     @Override
     protected void initViews() {
         initViewPager();
+        playerController.setPlayerListener(this);
     }
 
     @Override
@@ -66,13 +71,11 @@ public class ScanMusicActivity extends BaseActivity {
 
     private List<DiskMusicFragment> createFragments() {
         List<DiskMusicFragment> fragments = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 1; i < 5; i++) {
             DiskMusicFragment fragment = new DiskMusicFragment();
-            if (i == 0) {
-                Bundle bundle = new Bundle();
-                bundle.putInt(Constants.LOCAL_TYPE, 1);
-                fragment.setArguments(bundle);
-            }
+            Bundle bundle = new Bundle();
+            bundle.putInt(Constants.LOCAL_TYPE, i);
+            fragment.setArguments(bundle);
             fragments.add(fragment);
         }
         return fragments;
@@ -124,5 +127,32 @@ public class ScanMusicActivity extends BaseActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
+
+    @Override
+    public void play() {
+
+    }
+
+    @Override
+    public void next() {
+
+    }
+
+    @Override
+    public void playList() {
+
+    }
+
+    @Override
+    public void controller() {
+
     }
 }

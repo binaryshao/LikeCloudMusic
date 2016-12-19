@@ -31,6 +31,9 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
 
     public interface DiskMusicListener {
 
+        void toPlayerActivity(Song song);
+
+        void playMusic(Song song);
     }
 
     public DiskMusicAdapter(int currentType, DiskMusicListener listener, Context mContext) {
@@ -58,12 +61,34 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
         }
     }
 
-    void bindSong(SongHolder h, int position, Song song) {
+    void bindSong(SongHolder h, int position, final Song song) {
         h.songName.setText(song.getTitle());
-        h.info.setText(song.getAlbum());
+        h.info.setText(mContext.getString(R.string.song_info, song.getArtist(),song.getAlbum()));
+        h.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    if (song.isPlaying()) {
+                        listener.toPlayerActivity(song);
+                    } else {
+                        song.setPlaying(true);
+                        listener.playMusic(song);
+                    }
+                }
+            }
+        });
     }
 
     void bindOthers(OtherHolder h, int position, Song song) {
+        switch (currentType) {
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            default:
+        }
         Glide.with(mContext).load(song.getAlbum()).placeholder(R.drawable.pic_loading_45).error(R.drawable.pic_error_45).into(h.thumb);
         h.title.setText(song.getTitle());
     }

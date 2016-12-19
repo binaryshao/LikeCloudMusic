@@ -29,8 +29,8 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     private static final int LOADER_ID = 0;
     private static final Uri MEDIA_URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
     private static final String WHERE = MediaStore.Audio.Media.IS_MUSIC + "=1 AND "
-            + MediaStore.Audio.Media.SIZE + ">0";
-    private static final String ORDER_BY = MediaStore.Audio.Media.DISPLAY_NAME + " ASC";
+            + MediaStore.Audio.Media.DURATION + ">60000";
+    private static final String ORDER_BY = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
     private static String[] PROJECTIONS = {
             MediaStore.Audio.Media.DATA, // the real path
             MediaStore.Audio.Media.TITLE,
@@ -51,7 +51,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
         this.mInteractor = interactor;
     }
 
-    public void loadLocalMusic() {
+    public void loadMusicFromDisk() {
         mView.showLoading();
         mView.getLoaderManager().initLoader(LOADER_ID, null, this);
     }
@@ -77,7 +77,6 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        // Empty
     }
 
     public void onNext(List<Song> songs) {

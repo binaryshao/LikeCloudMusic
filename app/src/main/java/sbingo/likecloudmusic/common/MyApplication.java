@@ -6,6 +6,9 @@ import android.content.Context;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
 
+import org.litepal.LitePal;
+
+import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.di.component.ApplicationComponent;
 import sbingo.likecloudmusic.di.component.DaggerApplicationComponent;
 import sbingo.likecloudmusic.di.module.ApplicationModule;
@@ -28,6 +31,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = this;
+        LitePal.initialize(this);
+        LitePalHelper.initDB();
         initLogger();
         initApplicationComponent();
     }
