@@ -1,10 +1,7 @@
 package sbingo.likecloudmusic.ui.fragment.LocalMusic;
 
-import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -12,12 +9,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.functions.Action1;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.event.MusicChangeEvent;
+import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.ui.activity.ScanMusicActivity;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
-import sbingo.likecloudmusic.utils.RemindUtils;
 import sbingo.likecloudmusic.widget.LocalMenuItem;
 
 /**
@@ -86,6 +84,7 @@ public class LocalMusicFragment extends BaseFragment {
         local.showSpeaker();
         listCount.setText(getResources().getString(R.string.list_count, 9));
         initSwipeRefresh();
+        registerDiskMusicEvent();
     }
 
     void initSwipeRefresh() {
@@ -101,6 +100,16 @@ public class LocalMusicFragment extends BaseFragment {
             }
         });
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+    }
+
+    void registerDiskMusicEvent() {
+        RxBus.getInstance().toObservable(MusicChangeEvent.class)
+                .subscribe(new Action1<MusicChangeEvent>() {
+                    @Override
+                    public void call(MusicChangeEvent musicChangeEvent) {
+                        local.setCount(musicChangeEvent.getCount());
+                    }
+                });
     }
 
     @OnClick({R.id.local, R.id.recent, R.id.download, R.id.my_singers, R.id.mv, R.id.list_more, R.id.play_list})

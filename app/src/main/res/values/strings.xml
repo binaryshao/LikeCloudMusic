@@ -62,4 +62,8 @@
     <string name="list_count">创建的歌单 (%1$d)</string>
 
     <string name="disk_count">%1$d首</string>
+    <!--无本地音乐-->
+    <string name="empty_disk">暂无本地音乐</string>
+    <string name="scan_disk">一键扫描</string>
+
 </resources>

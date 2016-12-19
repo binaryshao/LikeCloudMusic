@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="@dimen/dp_55"
-              android:gravity="center_vertical"
-              android:paddingLeft="@dimen/dp_10"
-              android:paddingRight="@dimen/dp_10">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_55"
+                android:paddingLeft="@dimen/dp_10"
+                android:paddingRight="@dimen/dp_10">
 
     <ImageView
         android:id="@+id/speaker"
         android:layout_width="@dimen/dp_20"
         android:layout_height="@dimen/dp_20"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/dp_10"
         android:src="@drawable/speaker"
         android:visibility="gone"
         tools:visibility="visible"/>
 
-    <RelativeLayout android:layout_width="@dimen/dp_0"
+    <ImageView
+        android:id="@+id/more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:src="@drawable/more_40"/>
+
+    <RelativeLayout android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_toLeftOf="@id/more"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/speaker">
 
         <ImageView android:id="@+id/mv"
                    android:layout_width="wrap_content"
@@ -51,10 +60,4 @@
     </RelativeLayout>
 
 
-    <ImageView
-        android:id="@+id/more"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_10"
-        android:src="@drawable/more_40"/>
-</LinearLayout>
+</RelativeLayout>

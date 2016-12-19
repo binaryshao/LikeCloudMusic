@@ -9,11 +9,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Song;
-import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
 
 /**
  * Author: Sbingo
@@ -27,7 +28,8 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
     private Context mContext;
 
     private DiskMusicListener listener;
-    public interface DiskMusicListener{
+
+    public interface DiskMusicListener {
 
     }
 
@@ -48,10 +50,43 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
+        Song song = mList.get(position);
+        if (holder instanceof SongHolder) {
+            bindSong((SongHolder)holder, position, song);
+        } else {
+            bindOthers((OtherHolder)holder, position, song);
+        }
     }
 
-     class OtherHolder extends RecyclerView.ViewHolder {
+    void bindSong(SongHolder h, int position, Song song) {
+        h.songName.setText(song.getTitle());
+        h.info.setText(song.getAlbum());
+    }
+
+    void bindOthers(OtherHolder h, int position, Song song) {
+        Glide.with(mContext).load(song.getAlbum()).placeholder(R.drawable.pic_loading_45).error(R.drawable.pic_error_45).into(h.thumb);
+        h.title.setText(song.getTitle());
+    }
+
+    class SongHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.speaker)
+        ImageView speaker;
+        @BindView(R.id.mv)
+        ImageView mv;
+        @BindView(R.id.song_name)
+        TextView songName;
+        @BindView(R.id.info)
+        TextView info;
+        @BindView(R.id.more)
+        ImageView more;
+
+        SongHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    class OtherHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.thumb)
         ImageView thumb;
         @BindView(R.id.more)
@@ -73,21 +108,4 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
         }
     }
 
-     class SongHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.speaker)
-        ImageView speaker;
-        @BindView(R.id.mv)
-        ImageView mv;
-        @BindView(R.id.song_name)
-        TextView songName;
-        @BindView(R.id.info)
-        TextView info;
-        @BindView(R.id.more)
-        ImageView more;
-
-        SongHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
-    }
 }

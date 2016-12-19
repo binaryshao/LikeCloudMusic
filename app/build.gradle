@@ -23,7 +23,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile 'com.squareup.dagger:dagger:1.2.1'
     compile 'com.android.support:support-v4:25.0.1'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
@@ -36,5 +35,7 @@ dependencies {
     compile 'com.orhanobut:logger:1.15'
     compile 'com.github.chrisbanes:PhotoView:1.2.6'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    compile 'com.google.dagger:dagger:2.4'
+    apt 'com.google.dagger:dagger-compiler:2.4'
     compile project(':mylibrary')
 }

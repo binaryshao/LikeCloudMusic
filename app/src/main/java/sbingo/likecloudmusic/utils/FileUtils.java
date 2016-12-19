@@ -64,6 +64,7 @@ public class FileUtils {
                 songs.add(song);
             }
         }
+        cursor.close();
         return songs;
     }
 }

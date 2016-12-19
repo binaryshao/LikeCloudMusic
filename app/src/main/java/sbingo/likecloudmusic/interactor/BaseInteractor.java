@@ -7,8 +7,12 @@ import sbingo.likecloudmusic.presenter.BasePresenter;
  * Date:   2016/12/12
  */
 
-public class BaseInteractor<T> {
+public class BaseInteractor<T extends BasePresenter> {
 
-    protected BasePresenter<T> mPresenter;
+    protected T mPresenter;
+
+    public void attachPresenter(T mPresenter) {
+        this.mPresenter = mPresenter;
+    }
 
 }

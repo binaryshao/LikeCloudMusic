@@ -15,6 +15,10 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import butterknife.ButterKnife;
 import rx.Subscription;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.common.MyApplication;
+import sbingo.likecloudmusic.di.component.ActivityComponent;
+import sbingo.likecloudmusic.di.component.DaggerActivityComponent;
+import sbingo.likecloudmusic.di.module.ActivityModule;
 import sbingo.likecloudmusic.utils.RxUtils;
 
 /**
@@ -38,6 +42,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected ActionBar actionBar;
 
+    protected ActivityComponent mActivityComponent;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initToolbar();
         customToolbar();
+        initActivityComponent();
         initInjector();
         initViews();
     }
@@ -65,6 +72,13 @@ public abstract class BaseActivity extends AppCompatActivity {
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setStatusBarTintResource(R.color.colorPrimary);
         }
+    }
+
+    private void initActivityComponent() {
+        mActivityComponent = DaggerActivityComponent.builder()
+                .applicationComponent(((MyApplication) getApplication()).getmApplicationComponent())
+                .activityModule(new ActivityModule(this))
+                .build();
     }
 
     protected void openActivity(Class a) {

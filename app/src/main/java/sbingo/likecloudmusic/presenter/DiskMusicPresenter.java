@@ -7,36 +7,26 @@ import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import javax.inject.Inject;
+
 import sbingo.likecloudmusic.bean.Song;
-import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
-import sbingo.likecloudmusic.utils.FileUtils;
+import sbingo.likecloudmusic.common.MyApplication;
+import sbingo.likecloudmusic.event.MusicChangeEvent;
+import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.interactor.DiskMusicInteractor;
+import sbingo.likecloudmusic.ui.view.DiskMusicView;
 
 /**
  * Author: Sbingo
  * Date:   2016/12/18
  */
 
-public class DiskMusicPresenter extends BasePresenter implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = "LocalMusicPresenter";
-
-    private static final int URL_LOAD_LOCAL_MUSIC = 0;
+    private static final int LOADER_ID = 0;
     private static final Uri MEDIA_URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
     private static final String WHERE = MediaStore.Audio.Media.IS_MUSIC + "=1 AND "
             + MediaStore.Audio.Media.SIZE + ">0";
@@ -54,19 +44,23 @@ public class DiskMusicPresenter extends BasePresenter implements LoaderManager.L
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.SIZE
     };
+    private DiskMusicInteractor mInteractor;
 
-    private DiskMusicFragment mView;
+    @Inject
+    public DiskMusicPresenter(DiskMusicInteractor interactor) {
+        this.mInteractor = interactor;
+    }
 
     public void loadLocalMusic() {
-        mView.getLoaderManager().initLoader(URL_LOAD_LOCAL_MUSIC, null, this);
+        mView.showLoading();
+        mView.getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (id != URL_LOAD_LOCAL_MUSIC) return null;
-
+        if (id != LOADER_ID) return null;
         return new CursorLoader(
-                mView.getContext(),
+                MyApplication.getAppContext(),
                 MEDIA_URI,
                 PROJECTIONS,
                 WHERE,
@@ -77,53 +71,8 @@ public class DiskMusicPresenter extends BasePresenter implements LoaderManager.L
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Subscription subscription = Observable.just(cursor)
-                .flatMap(new Func1<Cursor, Observable<List<Song>>>() {
-                    @Override
-                    public Observable<List<Song>> call(Cursor cursor) {
-                        List<Song> songs = new ArrayList<>();
-                        if (cursor != null && cursor.getCount() > 0) {
-                            cursor.moveToFirst();
-                            do {
-                                Song song = cursorToMusic(cursor);
-                                songs.add(song);
-                            } while (cursor.moveToNext());
-                        }
-                        return Observable.just(songs);
-                    }
-                })
-                .doOnNext(new Action1<List<Song>>() {
-                    @Override
-                    public void call(List<Song> songs) {
-                        Log.d(TAG, "onLoadFinished: " + songs.size());
-                        Collections.sort(songs, new Comparator<Song>() {
-                            @Override
-                            public int compare(Song left, Song right) {
-                                return left.getDisplayName().compareTo(right.getDisplayName());
-                            }
-                        });
-
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<Song>>() {
-                    @Override
-                    public void onStart() {
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                    }
-
-                    @Override
-                    public void onNext(List<Song> songs) {
-                    }
-                });
+        mInteractor.attachPresenter(this);
+        mInteractor.onLoadFinish(cursor);
     }
 
     @Override
@@ -131,30 +80,19 @@ public class DiskMusicPresenter extends BasePresenter implements LoaderManager.L
         // Empty
     }
 
-    private Song cursorToMusic(Cursor cursor) {
-        String realPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-        File songFile = new File(realPath);
-        Song song;
-        if (songFile.exists()) {
-            // Using song parsed from file to avoid encoding problems
-            song = FileUtils.fileToMusic(songFile);
-            if (song != null) {
-                return song;
-            }
+    public void onNext(List<Song> songs) {
+        mView.hideLoading();
+        if (songs.isEmpty()) {
+            mView.showEmptyView();
+        } else {
+            mView.onMusicLoaded(songs);
         }
-        song = new Song();
-        song.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)));
-        String displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
-        if (displayName.endsWith(".mp3")) {
-            displayName = displayName.substring(0, displayName.length() - 4);
-        }
-        song.setDisplayName(displayName);
-        song.setArtist(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)));
-        song.setAlbum(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)));
-        song.setPath(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)));
-        song.setDuration(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)));
-        song.setSize(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)));
-        return song;
+        RxBus.getInstance().post(new MusicChangeEvent(songs.size()));
+    }
+
+    public void onError(Throwable throwable) {
+        mView.hideLoading();
+        mView.showMsg(throwable.getMessage());
     }
 
 }
