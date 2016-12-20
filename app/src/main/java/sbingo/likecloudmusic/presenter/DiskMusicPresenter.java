@@ -16,6 +16,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.db.LitePalHelper;
@@ -56,10 +57,6 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     public DiskMusicPresenter(DiskMusicInteractor interactor) {
         this.mInteractor = interactor;
         mInteractor.attachPresenter(this);
-    }
-
-    public BaseInteractor getInteractor() {
-        return mInteractor;
     }
 
     public void loadMusicFromDisk() {
@@ -108,4 +105,8 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
         mView.showMsg(throwable.getMessage());
     }
 
+    @Override
+    public CompositeSubscription provideSubscription() {
+        return mInteractor.getSubscriptions();
+    }
 }

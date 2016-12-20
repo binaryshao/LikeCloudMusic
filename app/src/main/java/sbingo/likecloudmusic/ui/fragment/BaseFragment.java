@@ -33,6 +33,8 @@ public abstract class BaseFragment extends Fragment {
 
     protected abstract void initViews();
 
+    protected abstract CompositeSubscription provideSubscription();
+
     protected Context mContext;
 
     private View mFragmentView;
@@ -76,5 +78,8 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         mSubscriptions.clear();
+        if (provideSubscription() != null) {
+            provideSubscription().clear();
+        }
     }
 }

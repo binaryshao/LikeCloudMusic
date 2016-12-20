@@ -39,6 +39,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract boolean hasToolbar();
 
+    protected abstract CompositeSubscription provideSubscription();
+
     protected CompositeSubscription mSubscriptions;
 
     protected ActionBar actionBar;
@@ -92,5 +94,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mSubscriptions.clear();
+        if (provideSubscription() != null) {
+            provideSubscription().clear();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package sbingo.likecloudmusic.presenter;
 
 
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.ui.view.BaseView;
 
 /**
@@ -8,11 +9,13 @@ import sbingo.likecloudmusic.ui.view.BaseView;
  * Date:   2016/12/12
  */
 
-public class BasePresenter<T extends BaseView> {
+public abstract class BasePresenter<T extends BaseView> {
 
-     protected T mView;
+    protected T mView;
 
     public void attachView(T mView) {
         this.mView = mView;
     }
+
+    public abstract CompositeSubscription provideSubscription();
 }

@@ -16,7 +16,7 @@ public class BaseInteractor<T extends BasePresenter> {
         this.mPresenter = mPresenter;
     }
 
-    protected CompositeSubscription mSubscriptions;
+    protected CompositeSubscription mSubscriptions = new CompositeSubscription();
 
     public CompositeSubscription getSubscriptions() {
         return mSubscriptions;

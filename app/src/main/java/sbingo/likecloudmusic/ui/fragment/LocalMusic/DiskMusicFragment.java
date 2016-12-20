@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
@@ -22,7 +23,7 @@ import sbingo.likecloudmusic.presenter.DiskMusicPresenter;
 import sbingo.likecloudmusic.ui.adapter.RvAdapter.DiskMusicAdapter;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
 import sbingo.likecloudmusic.ui.view.DiskMusicView;
-import sbingo.likecloudmusic.utils.FileUtils;
+import sbingo.likecloudmusic.utils.NumberUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 
@@ -76,14 +77,13 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
         }
     }
 
-    public void scanDiskMusic() {
-        mPresenter.loadMusicFromDisk();
+    @Override
+    protected CompositeSubscription provideSubscription() {
+        return mPresenter.provideSubscription();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mPresenter.getInteractor().getSubscriptions().clear();
+    public void scanDiskMusic() {
+        mPresenter.loadMusicFromDisk();
     }
 
     @Override
