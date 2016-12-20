@@ -1,5 +1,6 @@
 package sbingo.likecloudmusic.interactor;
 
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.presenter.BasePresenter;
 
 /**
@@ -15,4 +16,9 @@ public class BaseInteractor<T extends BasePresenter> {
         this.mPresenter = mPresenter;
     }
 
+    protected CompositeSubscription mSubscriptions;
+
+    public CompositeSubscription getSubscriptions() {
+        return mSubscriptions;
+    }
 }

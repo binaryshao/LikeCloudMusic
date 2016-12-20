@@ -14,6 +14,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.ButterKnife;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.di.component.ActivityComponent;
@@ -38,7 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract boolean hasToolbar();
 
-    protected Subscription mSubscription;
+    protected CompositeSubscription mSubscriptions;
 
     protected ActionBar actionBar;
 
@@ -52,6 +53,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initToolbar();
         customToolbar();
+        mSubscriptions = new CompositeSubscription();
         initActivityComponent();
         initInjector();
         initViews();
@@ -89,6 +91,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        RxUtils.unSubscribe(mSubscription);
+        mSubscriptions.clear();
     }
 }

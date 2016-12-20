@@ -14,8 +14,7 @@ public class Constants {
 
     //是否已经扫描过本地音乐
     public static final String IS_SCANNED = "is_scanned";
-
-
-
+    //无播放列表则不显示控制器
+    public static final String HAS_PLAYLIST = "has_playlist";
 
 }

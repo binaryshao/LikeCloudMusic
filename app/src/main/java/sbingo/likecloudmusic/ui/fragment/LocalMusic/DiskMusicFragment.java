@@ -15,16 +15,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
-import sbingo.likecloudmusic.db.LitePalHelper;
-import sbingo.likecloudmusic.event.MusicChangeEvent;
-import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.presenter.DiskMusicPresenter;
 import sbingo.likecloudmusic.ui.adapter.RvAdapter.DiskMusicAdapter;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
@@ -74,51 +67,23 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
         rView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new DiskMusicAdapter(currentType, this, getActivity());
         rView.setAdapter(mAdapter);
-        List<Song> songs = FileUtils.loadDiskMusic();
-//        MediaPlayer player = new MediaPlayer();
-//        try {
-//            player.setDataSource(songs.get(0).getPath());
-//            player.prepare();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        player.start();
-        mAdapter.setList(songs);
         if (PreferenceUtils.getBoolean(getActivity(), Constants.IS_SCANNED)) {
             Logger.d("loadMusicFromDB");
-            loadMusicFromDB();
+            mPresenter.loadMusicFromDB();
         } else {
             Logger.d("loadMusicFromDisk");
-            mPresenter.loadMusicFromDisk();
+            scanDiskMusic();
         }
     }
 
-    private void loadMusicFromDB() {
-        Observable.just(LitePalHelper.querySongs())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Song>>() {
-                    @Override
-                    public void onCompleted() {
+    public void scanDiskMusic() {
+        mPresenter.loadMusicFromDisk();
+    }
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        showMsg(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<Song> songs) {
-                        hideLoading();
-                        if (songs.isEmpty()) {
-                            showEmptyView();
-                        } else {
-                            onMusicLoaded(songs);
-                        }
-                        RxBus.getInstance().post(new MusicChangeEvent(songs.size()));
-                    }
-                });
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mPresenter.getInteractor().getSubscriptions().clear();
     }
 
     @Override
@@ -148,7 +113,7 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
 
     @OnClick(R.id.scan_disk)
     public void onClick() {
-        mPresenter.loadMusicFromDisk();
+        scanDiskMusic();
     }
 
     @Override

@@ -38,7 +38,9 @@
         android:id="@+id/player_controller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"/>
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

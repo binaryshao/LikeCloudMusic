@@ -12,10 +12,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.MyApplication;
+import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.event.MusicChangeEvent;
 import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.interactor.BaseInteractor;
 import sbingo.likecloudmusic.interactor.DiskMusicInteractor;
 import sbingo.likecloudmusic.ui.view.DiskMusicView;
 
@@ -49,11 +55,20 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     @Inject
     public DiskMusicPresenter(DiskMusicInteractor interactor) {
         this.mInteractor = interactor;
+        mInteractor.attachPresenter(this);
+    }
+
+    public BaseInteractor getInteractor() {
+        return mInteractor;
     }
 
     public void loadMusicFromDisk() {
         mView.showLoading();
         mView.getLoaderManager().initLoader(LOADER_ID, null, this);
+    }
+
+    public void loadMusicFromDB() {
+        mInteractor.loadFromDB();
     }
 
     @Override
@@ -71,8 +86,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mInteractor.attachPresenter(this);
-        mInteractor.onLoadFinish(cursor);
+        mInteractor.onLoadDiskFinished(cursor);
     }
 
     @Override

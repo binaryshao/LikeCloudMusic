@@ -33,6 +33,7 @@
     -->
     <list>
         <mapping class="sbingo.likecloudmusic.bean.Song"></mapping>
+        <mapping class="sbingo.likecloudmusic.bean.PlayList"></mapping>
     </list>
 
     <!--

@@ -23,7 +23,6 @@ public class Song extends DataSupport implements Parcelable {
 
     private String album;
 
-    @Column(unique = true)
     private String path;
 
     private int duration;

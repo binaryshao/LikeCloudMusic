@@ -12,7 +12,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -36,8 +38,8 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
     public DiskMusicInteractor() {
     }
 
-    public void onLoadFinish(Cursor cursor) {
-        Observable.just(cursor)
+    public void onLoadDiskFinished(Cursor cursor) {
+        Subscription subscription = Observable.just(cursor)
                 .flatMap(new Func1<Cursor, Observable<List<Song>>>() {
                     @Override
                     public Observable<List<Song>> call(Cursor cursor) {
@@ -49,8 +51,7 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
                                 songs.add(song);
                             } while (cursor.moveToNext());
                         }
-                        LitePalHelper.InsertSongs(songs);
-                        return Observable.just(songs);
+                        return LitePalHelper.clearAndInsertSongs(songs);
                     }
                 })
                 .doOnNext(new Action1<List<Song>>() {
@@ -87,7 +88,7 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
                         mPresenter.onNext(songs);
                     }
                 });
-
+        mSubscriptions.add(subscription);
     }
 
     private Song cursorToSong(Cursor cursor) {
@@ -114,5 +115,28 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
         song.setDuration(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)));
         song.setSize(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)));
         return song;
+    }
+
+    public void loadFromDB() {
+        Subscription subscription = LitePalHelper.querySongs()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Song>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mPresenter.onError(e);
+                    }
+
+                    @Override
+                    public void onNext(List<Song> songs) {
+                        mPresenter.onNext(songs);
+                    }
+                });
+        mSubscriptions.add(subscription);
     }
 }

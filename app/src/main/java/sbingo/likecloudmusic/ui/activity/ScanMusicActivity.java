@@ -15,10 +15,18 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.Constants;
+import sbingo.likecloudmusic.event.MusicChangeEvent;
+import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
+import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
+import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.LocalPagerAdapter;
 import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
+import sbingo.likecloudmusic.ui.fragment.LocalMusic.LocalMusicFragment;
+import sbingo.likecloudmusic.utils.NavigationUtils;
+import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
 
@@ -38,6 +46,8 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     @BindView(R.id.player_controller)
     OutPlayerController playerController;
 
+    private DiskMusicFragment[] diskMusicFragments = {new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment()};
+
     @Override
     protected int getLayoutId() {
         return R.layout.local_layout;
@@ -50,8 +60,8 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
 
     @Override
     protected void initViews() {
+        initPlayerController();
         initViewPager();
-        playerController.setPlayerListener(this);
     }
 
     @Override
@@ -64,19 +74,40 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         return true;
     }
 
+    void initPlayerController() {
+        playerController.setPlayerListener(this);
+        if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
+            playerController.setVisibility(View.VISIBLE);
+        }
+        RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
+                .subscribe(new Action1<PlaylistCreatedEvent>() {
+                    @Override
+                    public void call(PlaylistCreatedEvent event) {
+                        playerController.setVisibility(View.VISIBLE);
+                    }
+                });
+        RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
+                .subscribe(new Action1<PlaylistDeletedEvent>() {
+                    @Override
+                    public void call(PlaylistDeletedEvent event) {
+                        playerController.setVisibility(View.GONE);
+                    }
+                });
+    }
+
     void initViewPager() {
         viewPager.setAdapter(new LocalPagerAdapter(getSupportFragmentManager(), createFragments()));
+        viewPager.setOffscreenPageLimit(3);
         tabs.setupWithViewPager(viewPager);
     }
 
     private List<DiskMusicFragment> createFragments() {
         List<DiskMusicFragment> fragments = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
-            DiskMusicFragment fragment = new DiskMusicFragment();
+        for (int i = 0; i < 4; i++) {
             Bundle bundle = new Bundle();
-            bundle.putInt(Constants.LOCAL_TYPE, i);
-            fragment.setArguments(bundle);
-            fragments.add(fragment);
+            bundle.putInt(Constants.LOCAL_TYPE, i + 1);
+            diskMusicFragments[i].setArguments(bundle);
+            fragments.add(diskMusicFragments[i]);
         }
         return fragments;
     }
@@ -114,7 +145,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                 RemindUtils.showToast("0");
                 break;
             case R.id.scan_music:
-                RemindUtils.showToast("1");
+                scanFragments();
                 break;
             case R.id.sort:
                 RemindUtils.showToast("2");
@@ -127,6 +158,16 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    void scanFragments() {
+        for (int i = 0; i < 4; i++) {
+            scanFragment(diskMusicFragments[i]);
+        }
+    }
+
+    void scanFragment(DiskMusicFragment fragment) {
+        fragment.scanDiskMusic();
     }
 
     @Override

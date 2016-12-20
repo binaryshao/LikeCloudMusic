@@ -11,7 +11,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".ui.activity.LoadingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -23,7 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -31,13 +29,23 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Main"
             android:windowSoftInputMode="adjustPan|stateHidden"/>
-
         <activity
             android:name=".ui.activity.ScanMusicActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden"/>
 
+        <service
+            android:name=".player.PlayService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="like_cloud_music.play_next"/>
+                <action android:name="like_cloud_music.play_last"/>
+                <action android:name="like_cloud_music.play_toggle"/>
+                <action android:name="like_cloud_music.stop_service"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

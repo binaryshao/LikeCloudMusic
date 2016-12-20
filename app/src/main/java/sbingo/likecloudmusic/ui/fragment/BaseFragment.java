@@ -1,6 +1,5 @@
 package sbingo.likecloudmusic.ui.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.orhanobut.logger.Logger;
-
 import butterknife.ButterKnife;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.di.component.DaggerFragmentComponent;
 import sbingo.likecloudmusic.di.component.FragmentComponent;
@@ -27,7 +25,7 @@ import sbingo.likecloudmusic.utils.RxUtils;
 
 public abstract class BaseFragment extends Fragment {
 
-    protected Subscription mSubscription;
+    protected CompositeSubscription mSubscriptions;
 
     protected abstract int getLayoutId();
 
@@ -46,6 +44,7 @@ public abstract class BaseFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.mContext = context;
+        mSubscriptions = new CompositeSubscription();
     }
 
     @Nullable
@@ -76,6 +75,6 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        RxUtils.unSubscribe(mSubscription);
+        mSubscriptions.clear();
     }
 }

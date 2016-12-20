@@ -26,8 +26,14 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.functions.Action1;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.common.Constants;
+import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
+import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
+import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
+import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
 
@@ -99,7 +105,28 @@ public class MainActivity extends BaseActivity
         initNavigation();
         initRadioGroup();
         initViewPager();
+        initPlayerController();
+    }
+
+    void initPlayerController() {
         playerController.setPlayerListener(new MyPlayerListener());
+        if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
+            playerController.setVisibility(View.VISIBLE);
+        }
+        RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
+                .subscribe(new Action1<PlaylistCreatedEvent>() {
+                    @Override
+                    public void call(PlaylistCreatedEvent event) {
+                        playerController.setVisibility(View.VISIBLE);
+                    }
+                });
+        RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
+                .subscribe(new Action1<PlaylistDeletedEvent>() {
+                    @Override
+                    public void call(PlaylistDeletedEvent event) {
+                        playerController.setVisibility(View.GONE);
+                    }
+                });
     }
 
     void initNavigation() {
