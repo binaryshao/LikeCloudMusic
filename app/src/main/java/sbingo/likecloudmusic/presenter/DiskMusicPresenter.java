@@ -12,17 +12,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.MyApplication;
-import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.event.MusicChangeEvent;
+import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.RxBus;
-import sbingo.likecloudmusic.interactor.BaseInteractor;
 import sbingo.likecloudmusic.interactor.DiskMusicInteractor;
 import sbingo.likecloudmusic.ui.view.DiskMusicView;
 
@@ -65,7 +61,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     }
 
     public void loadMusicFromDB() {
-        mInteractor.loadFromDB();
+        mInteractor.loadSongFromDB();
     }
 
     @Override
@@ -90,7 +86,11 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     public void onLoaderReset(Loader<Cursor> loader) {
     }
 
-    public void onNext(List<Song> songs) {
+    public void createPlaylist(Playlist playlist, int index) {
+        mInteractor.createPlaylist(playlist, index);
+    }
+
+    public void onSongNext(List<Song> songs) {
         mView.hideLoading();
         if (songs.isEmpty()) {
             mView.showEmptyView();
@@ -100,8 +100,16 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
         RxBus.getInstance().post(new MusicChangeEvent(songs.size()));
     }
 
-    public void onError(Throwable throwable) {
+    public void onSongError(Throwable throwable) {
         mView.hideLoading();
+        mView.showMsg(throwable.getMessage());
+    }
+
+    public void onPlaylistNext(Playlist playlist, int index) {
+        mView.onPlaylistCreated(playlist, index);
+    }
+
+    public void onPlaylistError(Throwable throwable) {
         mView.showMsg(throwable.getMessage());
     }
 

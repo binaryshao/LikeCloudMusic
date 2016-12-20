@@ -10,13 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
-import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.di.component.DaggerFragmentComponent;
 import sbingo.likecloudmusic.di.component.FragmentComponent;
 import sbingo.likecloudmusic.di.module.FragmentModule;
-import sbingo.likecloudmusic.utils.RxUtils;
 
 /**
  * Author: Sbingo
@@ -64,7 +62,7 @@ public abstract class BaseFragment extends Fragment {
 
     private void initFragmentComponent() {
         mFragmentComponent = DaggerFragmentComponent.builder()
-                .applicationComponent(((MyApplication) getActivity().getApplication()).getmApplicationComponent())
+                .applicationComponent(((MyApplication) getActivity().getApplication()).getApplicationComponent())
                 .fragmentModule(new FragmentModule(this))
                 .build();
     }

@@ -4,6 +4,7 @@ import android.support.v4.app.LoaderManager;
 
 import java.util.List;
 
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 
 /**
@@ -18,5 +19,9 @@ public interface DiskMusicView extends BaseView {
     void showEmptyView();
 
     LoaderManager getLoaderManager();
+
+    void onPlaylistCreated(Playlist playlist, int index);
+
+    void onPlaylistDeleted(Playlist playlist);
 
 }

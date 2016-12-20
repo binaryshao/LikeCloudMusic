@@ -27,6 +27,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
@@ -218,6 +219,11 @@ public class MainActivity extends BaseActivity
     @Override
     protected boolean hasToolbar() {
         return true;
+    }
+
+    @Override
+    protected CompositeSubscription provideSubscription() {
+        return null;
     }
 
     //播放控制器

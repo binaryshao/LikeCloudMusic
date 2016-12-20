@@ -1,5 +1,6 @@
 package sbingo.likecloudmusic.ui.fragment.LocalMusic;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -17,13 +18,16 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
+import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
+import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.player.PlayService;
 import sbingo.likecloudmusic.presenter.DiskMusicPresenter;
 import sbingo.likecloudmusic.ui.adapter.RvAdapter.DiskMusicAdapter;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
 import sbingo.likecloudmusic.ui.view.DiskMusicView;
-import sbingo.likecloudmusic.utils.NumberUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 
@@ -111,6 +115,16 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
         emptyView.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onPlaylistCreated(Playlist playlist, int index) {
+        RxBus.getInstance().post(new PlaylistCreatedEvent(playlist, index));
+    }
+
+    @Override
+    public void onPlaylistDeleted(Playlist playlist) {
+
+    }
+
     @OnClick(R.id.scan_disk)
     public void onClick() {
         scanDiskMusic();
@@ -122,7 +136,8 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     }
 
     @Override
-    public void playMusic(Song song) {
-
+    public void playList(Playlist playlist, int index) {
+        mPresenter.createPlaylist(playlist, index);
     }
+
 }

@@ -6,13 +6,12 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 
-import sbingo.likecloudmusic.bean.PlayList;
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 
 public class PlayService extends Service implements MediaPlayer.OnCompletionListener {
@@ -26,11 +25,11 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     private MediaPlayer mPlayer;
     private PlayerBinder mBinder;
-    private PlayList mPlayList;
+    private Playlist mPlayList;
 
     private boolean isPaused;
 
-    class PlayerBinder extends Binder {
+    public class PlayerBinder extends Binder {
         public PlayService getPlayService() {
             return PlayService.this;
         }
@@ -49,7 +48,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mPlayer = new MediaPlayer();
         mPlayer.setOnCompletionListener(this);
 
-        mPlayList = new PlayList();
+        mPlayList = new Playlist();
 
         mBinder = new PlayerBinder();
     }
@@ -98,11 +97,11 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mPlayer.release();
     }
 
-    public PlayList getPlayList() {
+    public Playlist getPlayList() {
         return mPlayList;
     }
 
-    public void setPlayList(PlayList mPlayList) {
+    public void setPlayList(Playlist mPlayList) {
         this.mPlayList = mPlayList;
     }
 
@@ -126,6 +125,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     public boolean canResumePlay() {
         if (isPaused) {
             mPlayer.start();
+            isPaused = false;
             return true;
         }
         return false;
@@ -138,7 +138,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         }
     }
 
-    public void play(PlayList list) {
+    public void play(Playlist list) {
         if (list == null) return;
 
         isPaused = false;
@@ -146,8 +146,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         play();
     }
 
-    public void play(PlayList list, int startIndex) {
-        if (list == null || startIndex < 0 || startIndex >= list.getNumOfSongs()) return ;
+    public void play(Playlist list, int startIndex) {
+        if (list == null || startIndex < 0 || startIndex >= list.getNumOfSongs()) return;
 
         isPaused = false;
         list.setPlayingIndex(startIndex);
@@ -216,6 +216,10 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     public void setPlayMode(PlayMode playMode) {
         mPlayList.setPlayMode(playMode);
+    }
+
+    private void showNotification() {
+
     }
 
 }

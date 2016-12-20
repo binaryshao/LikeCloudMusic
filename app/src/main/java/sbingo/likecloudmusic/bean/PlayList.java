@@ -22,11 +22,9 @@ import sbingo.likecloudmusic.player.PlayMode;
  * Date:   2016/12/20
  */
 
-public class PlayList extends DataSupport implements Parcelable {
+public class Playlist extends DataSupport implements Parcelable {
 
     public static final int NO_POSITION = -1;
-
-    public static final String COLUMN_FAVORITE = "favorite";
 
     private int id;
 
@@ -42,19 +40,21 @@ public class PlayList extends DataSupport implements Parcelable {
 
     private List<Song> songs = new ArrayList<>();
 
+    private boolean currentPlaylist;
+
     private int playingIndex = -1;
 
     private PlayMode playMode = PlayMode.getDefault();
 
-    public PlayList() {
+    public Playlist() {
     }
 
-    public PlayList(Song song) {
+    public Playlist(Song song) {
         songs.add(song);
         numOfSongs = 1;
     }
 
-    public PlayList(Parcel in) {
+    public Playlist(Parcel in) {
         readFromParcel(in);
     }
 
@@ -106,6 +106,14 @@ public class PlayList extends DataSupport implements Parcelable {
         this.updatedAt = updatedAt;
     }
 
+    public boolean isCurrentPlaylist() {
+        return currentPlaylist;
+    }
+
+    public void setCurrentPlaylist(boolean currentPlaylist) {
+        this.currentPlaylist = currentPlaylist;
+    }
+
     @NonNull
     public List<Song> getSongs() {
         if (songs == null) {
@@ -153,6 +161,7 @@ public class PlayList extends DataSupport implements Parcelable {
         dest.writeTypedList(this.songs);
         dest.writeInt(this.playingIndex);
         dest.writeInt(this.playMode == null ? -1 : this.playMode.ordinal());
+        dest.writeByte(this.currentPlaylist ? (byte) 1 : (byte) 0);
     }
 
     public void readFromParcel(Parcel in) {
@@ -168,17 +177,18 @@ public class PlayList extends DataSupport implements Parcelable {
         this.playingIndex = in.readInt();
         int tmpPlayMode = in.readInt();
         this.playMode = tmpPlayMode == -1 ? null : PlayMode.values()[tmpPlayMode];
+        this.currentPlaylist = in.readByte() != 0;
     }
 
-    public static final Creator<PlayList> CREATOR = new Creator<PlayList>() {
+    public static final Creator<Playlist> CREATOR = new Creator<Playlist>() {
         @Override
-        public PlayList createFromParcel(Parcel source) {
-            return new PlayList(source);
+        public Playlist createFromParcel(Parcel source) {
+            return new Playlist(source);
         }
 
         @Override
-        public PlayList[] newArray(int size) {
-            return new PlayList[size];
+        public Playlist[] newArray(int size) {
+            return new Playlist[size];
         }
     };
 

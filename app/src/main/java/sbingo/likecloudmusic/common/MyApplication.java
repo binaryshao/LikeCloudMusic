@@ -41,7 +41,7 @@ public class MyApplication extends Application {
         return appContext;
     }
 
-    public ApplicationComponent getmApplicationComponent() {
+    public ApplicationComponent getApplicationComponent() {
         return mApplicationComponent;
     }
 

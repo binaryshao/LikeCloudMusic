@@ -19,6 +19,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.common.MyApplication;
@@ -80,12 +81,12 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
 
                     @Override
                     public void onError(Throwable throwable) {
-                        mPresenter.onError(throwable);
+                        mPresenter.onSongError(throwable);
                     }
 
                     @Override
                     public void onNext(List<Song> songs) {
-                        mPresenter.onNext(songs);
+                        mPresenter.onSongNext(songs);
                     }
                 });
         mSubscriptions.add(subscription);
@@ -117,7 +118,7 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
         return song;
     }
 
-    public void loadFromDB() {
+    public void loadSongFromDB() {
         Subscription subscription = LitePalHelper.querySongs()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -129,14 +130,38 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
 
                     @Override
                     public void onError(Throwable e) {
-                        mPresenter.onError(e);
+                        mPresenter.onSongError(e);
                     }
 
                     @Override
                     public void onNext(List<Song> songs) {
-                        mPresenter.onNext(songs);
+                        mPresenter.onSongNext(songs);
                     }
                 });
         mSubscriptions.add(subscription);
     }
+
+    public void createPlaylist(Playlist playlist, final int index) {
+        Subscription subscription = LitePalHelper.insertPlaylist(playlist)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Playlist>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mPresenter.onPlaylistError(e);
+                    }
+
+                    @Override
+                    public void onNext(Playlist playlist) {
+                        mPresenter.onPlaylistNext(playlist, index);
+                    }
+                });
+        mSubscriptions.add(subscription);
+    }
+
 }

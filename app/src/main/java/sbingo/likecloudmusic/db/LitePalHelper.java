@@ -1,14 +1,17 @@
 package sbingo.likecloudmusic.db;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.text.style.SubscriptSpan;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
+import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 
 /**
@@ -24,15 +27,27 @@ public class LitePalHelper {
         db = LitePal.getDatabase();
     }
 
+    //Song
+
     public static Observable<List<Song>> InsertSongs(final List<Song> songs) {
         return Observable.create(new Observable.OnSubscribe<List<Song>>() {
             @Override
             public void call(Subscriber<? super List<Song>> subscriber) {
+                boolean isSuccess = true;
                 for (Song song : songs) {
-                    song.save();
+                    if (!song.save()) {
+                        isSuccess = false;
+                        break;
+                    }
                 }
-                subscriber.onNext(DataSupport.findAll(Song.class));
-                subscriber.onCompleted();
+                if (isSuccess) {
+                    List<Song> songList = DataSupport.findAll(Song.class);
+                    subscriber.onNext(songList);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new Throwable("存储歌曲出错！"));
+                }
+
             }
         });
     }
@@ -41,12 +56,21 @@ public class LitePalHelper {
         return Observable.create(new Observable.OnSubscribe<List<Song>>() {
             @Override
             public void call(Subscriber<? super List<Song>> subscriber) {
+                boolean isSuccess = true;
                 DataSupport.deleteAll(Song.class);
                 for (Song song : songs) {
-                    song.save();
+                    if (!song.save()) {
+                        isSuccess = false;
+                        break;
+                    }
                 }
-                subscriber.onNext(DataSupport.findAll(Song.class));
-                subscriber.onCompleted();
+                if (isSuccess) {
+                    List<Song> songList = DataSupport.findAll(Song.class);
+                    subscriber.onNext(songList);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new Throwable("存储歌曲出错！"));
+                }
             }
         });
     }
@@ -79,6 +103,26 @@ public class LitePalHelper {
             public void call(Subscriber<? super Void> subscriber) {
                 DataSupport.deleteAll(Song.class);
                 subscriber.onCompleted();
+            }
+        });
+    }
+
+    //Playlist
+
+    public static Observable<Playlist> insertPlaylist(final Playlist playlist) {
+        return Observable.create(new Observable.OnSubscribe<Playlist>() {
+            @Override
+            public void call(Subscriber<? super Playlist> subscriber) {
+                Date now = new Date();
+                playlist.setCreatedAt(now);
+                playlist.setUpdatedAt(now);
+                boolean isSuccess = playlist.save();
+                if (isSuccess) {
+                    subscriber.onNext(playlist);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new Throwable("存储歌单出错！"));
+                }
             }
         });
     }

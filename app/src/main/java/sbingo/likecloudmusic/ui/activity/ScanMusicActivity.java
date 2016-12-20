@@ -1,6 +1,10 @@
 package sbingo.likecloudmusic.ui.activity;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.view.menu.MenuBuilder;
@@ -9,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.orhanobut.logger.Logger;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +22,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.Constants;
-import sbingo.likecloudmusic.event.MusicChangeEvent;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
 import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.player.PlayService;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.LocalPagerAdapter;
 import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
-import sbingo.likecloudmusic.ui.fragment.LocalMusic.LocalMusicFragment;
-import sbingo.likecloudmusic.utils.NavigationUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
@@ -47,6 +52,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     OutPlayerController playerController;
 
     private DiskMusicFragment[] diskMusicFragments = {new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment()};
+    private PlayService mPlayService;
 
     @Override
     protected int getLayoutId() {
@@ -74,6 +80,11 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         return true;
     }
 
+    @Override
+    protected CompositeSubscription provideSubscription() {
+        return null;
+    }
+
     void initPlayerController() {
         playerController.setPlayerListener(this);
         if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
@@ -83,7 +94,16 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
                     @Override
                     public void call(PlaylistCreatedEvent event) {
-                        playerController.setVisibility(View.VISIBLE);
+                        if (playerController.getVisibility() != View.VISIBLE) {
+                            playerController.setVisibility(View.VISIBLE);
+                        }
+                        bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
+                        Logger.d("is_service_ready ?");
+                        if (mPlayService != null) {
+                            mPlayService.play(event.getPlaylist(), event.getIndex());
+                        }
+                        PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, true);
+
                     }
                 });
         RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
@@ -111,6 +131,20 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         }
         return fragments;
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Logger.d("onServiceConnected");
+            mPlayService = ((PlayService.PlayerBinder) service).getPlayService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mPlayService = null;
+        }
+    };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

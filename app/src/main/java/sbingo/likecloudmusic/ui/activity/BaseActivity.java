@@ -13,14 +13,12 @@ import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.ButterKnife;
-import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.di.component.ActivityComponent;
 import sbingo.likecloudmusic.di.component.DaggerActivityComponent;
 import sbingo.likecloudmusic.di.module.ActivityModule;
-import sbingo.likecloudmusic.utils.RxUtils;
 
 /**
  * Author: Sbingo
@@ -80,7 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void initActivityComponent() {
         mActivityComponent = DaggerActivityComponent.builder()
-                .applicationComponent(((MyApplication) getApplication()).getmApplicationComponent())
+                .applicationComponent(((MyApplication) getApplication()).getApplicationComponent())
                 .activityModule(new ActivityModule(this))
                 .build();
     }

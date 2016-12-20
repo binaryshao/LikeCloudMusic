@@ -11,9 +11,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 
 /**
@@ -33,7 +36,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
 
         void toPlayerActivity(Song song);
 
-        void playMusic(Song song);
+        void playList(Playlist playlist, int index);
     }
 
     public DiskMusicAdapter(int currentType, DiskMusicListener listener, Context mContext) {
@@ -61,7 +64,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
         }
     }
 
-    void bindSong(SongHolder h, int position, final Song song) {
+    void bindSong(SongHolder h, final int position, final Song song) {
         h.songName.setText(song.getTitle());
         h.info.setText(mContext.getString(R.string.song_info, song.getArtist(),song.getAlbum()));
         h.itemView.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +75,10 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
                         listener.toPlayerActivity(song);
                     } else {
                         song.setPlaying(true);
-                        listener.playMusic(song);
+                        Playlist playlist = new Playlist();
+                        playlist.setSongs(mList);
+                        playlist.setCurrentPlaylist(true);
+                        listener.playList(playlist, position);
                     }
                 }
             }
