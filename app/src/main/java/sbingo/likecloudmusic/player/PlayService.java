@@ -9,10 +9,19 @@ import android.support.annotation.Nullable;
 
 import com.orhanobut.logger.Logger;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
+import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.utils.FileUtils;
+import sbingo.likecloudmusic.utils.RemindUtils;
 
 public class PlayService extends Service implements MediaPlayer.OnCompletionListener {
 
@@ -28,6 +37,9 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     private Playlist mPlayList;
 
     private boolean isPaused;
+
+    private ExecutorService executorService;
+
 
     public class PlayerBinder extends Binder {
         public PlayService getPlayService() {
@@ -51,11 +63,12 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mPlayList = new Playlist();
 
         mBinder = new PlayerBinder();
+
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Logger.d(TAG + "onStartCommand");
         String action = intent.getAction();
         if (ACTION_PLAY_TOGGLE.equals(action)) {
             if (isPlaying()) {
@@ -74,24 +87,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
-        Logger.d(TAG + "onCompletion");
-        Song next = null;
-        if (mPlayList.hasNext(true)) {
-            if (mPlayList.getPlayMode() == PlayMode.SINGLE) {
-                next = mPlayList.getCurrentSong();
-                play();
-            } else {
-                next = mPlayList.next();
-                play();
-            }
-        }
-    }
-
-    @Override
     public void onDestroy() {
         Logger.d(TAG + "onDestroy");
-
         super.onDestroy();
         mPlayer.reset();
         mPlayer.release();
@@ -106,18 +103,54 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     }
 
     public void play() {
-        if (canResumePlay()) {
-            return;
+        executorService.execute(playTask);
+    }
+
+    private Runnable playTask = new Runnable() {
+        @Override
+        public void run() {
+            if (canResumePlay()) {
+                return;
+            }
+            if (mPlayList.prepare()) {
+                Song song = mPlayList.getCurrentSong();
+                try {
+                    if (!FileUtils.isFileExists(song.getPath())) {
+                        throw new FileNotFoundException();
+                    }
+                    mPlayer.reset();
+                    mPlayer.setDataSource(song.getPath());
+                    mPlayer.prepare();
+                    mPlayer.start();
+                } catch (FileNotFoundException e) {
+                    noFileWhilePlay(song);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        if (mPlayList.prepare()) {
-            Song song = mPlayList.getCurrentSong();
-            try {
-                mPlayer.reset();
-                mPlayer.setDataSource(song.getPath());
-                mPlayer.prepare();
-                mPlayer.start();
-            } catch (IOException e) {
-                Logger.d(TAG + e);
+    };
+
+    private void noFileWhilePlay(final Song song) {
+        RemindUtils.showToast("跳过一首不存在的歌曲");
+        LitePalHelper.deleteSong(song)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        deleteSongFromPlaylist(song);
+                        play();
+                    }
+                });
+    }
+
+    private void deleteSongFromPlaylist(Song song) {
+        if (mPlayList.getSongs().isEmpty()) return;
+        for (Song s : mPlayList.getSongs()) {
+            if (s.getPath().equals(song.getPath())) {
+                mPlayList.getSongs().remove(song);
+                break;
             }
         }
     }
@@ -183,9 +216,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     }
 
     public void stopService() {
-        if (isPlaying()) {
-            pause();
-        }
+        pause();
         stopForeground(true);
     }
 
@@ -218,8 +249,22 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mPlayList.setPlayMode(playMode);
     }
 
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        Logger.d(TAG + "onCompletion");
+        Song next = null;
+        if (mPlayList.hasNext(true)) {
+            if (mPlayList.getPlayMode() == PlayMode.SINGLE) {
+                next = mPlayList.getCurrentSong();
+                play();
+            } else {
+                next = mPlayList.next();
+                play();
+            }
+        }
+    }
+
     private void showNotification() {
 
     }
-
 }

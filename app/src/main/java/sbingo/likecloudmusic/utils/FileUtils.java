@@ -67,4 +67,13 @@ public class FileUtils {
         cursor.close();
         return songs;
     }
+
+    public static boolean isFileExists(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            return true;
+        }
+        return false;
+    }
+
 }

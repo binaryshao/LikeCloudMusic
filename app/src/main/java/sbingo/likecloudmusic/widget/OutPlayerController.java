@@ -70,6 +70,7 @@ public class OutPlayerController extends FrameLayout {
         }
         switch (view.getId()) {
             case R.id.next:
+                setPlaying(true);
                 listener.next();
                 break;
             case R.id.play:
@@ -102,6 +103,11 @@ public class OutPlayerController extends FrameLayout {
 
     public boolean isPlaying() {
         return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+        Glide.with(mContext).load(isPlaying ? R.drawable.pause : R.drawable.play).placeholder(R.drawable.pic_loading_45).into(play);
     }
 
     public void setThumb(String url) {

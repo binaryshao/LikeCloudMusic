@@ -75,7 +75,7 @@ public class Playlist extends DataSupport implements Parcelable {
     }
 
     public int getNumOfSongs() {
-        return numOfSongs;
+        return songs.size();
     }
 
     public void setNumOfSongs(int numOfSongs) {

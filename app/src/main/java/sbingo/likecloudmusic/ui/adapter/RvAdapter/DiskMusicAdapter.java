@@ -10,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.orhanobut.logger.Logger;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -18,6 +20,9 @@ import butterknife.ButterKnife;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
+import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.utils.FileUtils;
+import sbingo.likecloudmusic.utils.RemindUtils;
 
 /**
  * Author: Sbingo
@@ -26,11 +31,15 @@ import sbingo.likecloudmusic.bean.Song;
 
 public class DiskMusicAdapter extends BaseRvAdapter<Song> {
 
+    private static final String TAG = "DiskMusicAdapter :";
+
     private int currentType;
 
     private Context mContext;
 
     private DiskMusicListener listener;
+
+    private int currentPlayingIndex;
 
     public interface DiskMusicListener {
 
@@ -58,23 +67,33 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Song song = mList.get(position);
         if (holder instanceof SongHolder) {
-            bindSong((SongHolder)holder, position, song);
+            bindSong((SongHolder) holder, position, song);
         } else {
-            bindOthers((OtherHolder)holder, position, song);
+            bindOthers((OtherHolder) holder, position, song);
         }
     }
 
     void bindSong(SongHolder h, final int position, final Song song) {
         h.songName.setText(song.getTitle());
-        h.info.setText(mContext.getString(R.string.song_info, song.getArtist(),song.getAlbum()));
+        h.info.setText(mContext.getString(R.string.song_info, song.getArtist(), song.getAlbum()));
         h.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listener != null) {
                     if (song.isPlaying()) {
+                        Logger.d(TAG + "toPlayerActivity");
                         listener.toPlayerActivity(song);
                     } else {
+                        Logger.d(TAG + "playList");
+                        if (!FileUtils.isFileExists(song.getPath())) {
+                            RemindUtils.showToast("该文件不存在");
+                            LitePalHelper.deleteSong(song);
+                            deleteItem(position);
+                            return;
+                        }
                         song.setPlaying(true);
+                        mList.get(currentPlayingIndex).setPlaying(false);
+                        currentPlayingIndex = position;
                         Playlist playlist = new Playlist();
                         playlist.setSongs(mList);
                         playlist.setCurrentPlaylist(true);

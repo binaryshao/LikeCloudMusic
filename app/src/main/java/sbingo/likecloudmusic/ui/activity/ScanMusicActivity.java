@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.MediaController;
 
 import com.orhanobut.logger.Logger;
 
@@ -24,6 +25,7 @@ import butterknife.ButterKnife;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
@@ -53,6 +55,8 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
 
     private DiskMusicFragment[] diskMusicFragments = {new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment()};
     private PlayService mPlayService;
+    private Playlist playlist;
+    private int index;
 
     @Override
     protected int getLayoutId() {
@@ -97,13 +101,16 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         if (playerController.getVisibility() != View.VISIBLE) {
                             playerController.setVisibility(View.VISIBLE);
                         }
-                        bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
-                        Logger.d("is_service_ready ?");
-                        if (mPlayService != null) {
-                            mPlayService.play(event.getPlaylist(), event.getIndex());
+                        playlist = event.getPlaylist();
+                        index = event.getIndex();
+                        if (mPlayService == null) {
+                            bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
+                        } else {
+                            mPlayService.play(playlist, index);
+                            playerController.setPlaying(true);
+                            playlist = null;
                         }
                         PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, true);
-
                     }
                 });
         RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
@@ -133,14 +140,19 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Logger.d("onServiceConnected");
             mPlayService = ((PlayService.PlayerBinder) service).getPlayService();
+            mPlayService.play(playlist, index);
+            playerController.setPlaying(true);
+            playlist = null;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Logger.d("onServiceDisconnected");
             mPlayService = null;
         }
     };
@@ -205,29 +217,36 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mPlayService != null) {
+            unbindService(mConnection);
+            mPlayService = null;
+        }
     }
 
     @Override
     public void play() {
-
+        if (mPlayService.isPlaying()) {
+            mPlayService.pause();
+        } else {
+            mPlayService.play();
+        }
     }
 
     @Override
     public void next() {
-
+        mPlayService.playNext();
     }
 
     @Override
     public void playList() {
-
+        Logger.d(mPlayService.getPlayList().getSongs());
     }
 
     @Override
     public void controller() {
-
+        RemindUtils.showToast(String.format("【%s】播放详情页面待续……",
+                mPlayService.getPlayList().getCurrentSong().getTitle()));
     }
 }

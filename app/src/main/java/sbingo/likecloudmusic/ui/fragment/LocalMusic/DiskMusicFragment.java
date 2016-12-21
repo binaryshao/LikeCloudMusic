@@ -23,7 +23,6 @@ import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.RxBus;
-import sbingo.likecloudmusic.player.PlayService;
 import sbingo.likecloudmusic.presenter.DiskMusicPresenter;
 import sbingo.likecloudmusic.ui.adapter.RvAdapter.DiskMusicAdapter;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
@@ -132,7 +131,7 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
 
     @Override
     public void toPlayerActivity(Song song) {
-
+        RemindUtils.showToast(String.format("【%s】播放详情页面待续……", song.getTitle()));
     }
 
     @Override
