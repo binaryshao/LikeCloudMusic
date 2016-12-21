@@ -1,6 +1,9 @@
 package sbingo.likecloudmusic.ui.activity;
 
-import android.os.Bundle;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -24,15 +27,24 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.orhanobut.logger.Logger;
+
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
+import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
+import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
 import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.player.PlayService;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
@@ -45,6 +57,8 @@ import sbingo.likecloudmusic.widget.OutPlayerController;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+
+    private static final String TAG = "MainActivity :";
 
     @BindView(R.id.fab)
     FloatingActionButton fab;
@@ -76,6 +90,11 @@ public class MainActivity extends BaseActivity
 
     boolean fromViewPager;
     boolean fromRadioGroup;
+
+    private PlayService mPlayService;
+    private Playlist playlist;
+    private int index;
+    private boolean playOnceBind;
 
 
     @Override
@@ -113,13 +132,29 @@ public class MainActivity extends BaseActivity
         playerController.setPlayerListener(new MyPlayerListener());
         if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
             playerController.setVisibility(View.VISIBLE);
+            getPlaylistAndBind();
         }
+
         RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
                     @Override
                     public void call(PlaylistCreatedEvent event) {
-                        playerController.setVisibility(View.VISIBLE);
+                        if (playerController.getVisibility() != View.VISIBLE) {
+                            playerController.setVisibility(View.VISIBLE);
+                        }
+                        playlist = event.getPlaylist();
+                        index = event.getIndex();
+                        if (mPlayService == null) {
+                            playOnceBind = true;
+                            bindService(new Intent(MainActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
+                        } else {
+                            mPlayService.play(playlist, index);
+                            playerController.setPlaying(true);
+                            playlist = null;
+                        }
+                        PreferenceUtils.putBoolean(MainActivity.this, Constants.HAS_PLAYLIST, true);
                     }
+
                 });
         RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
                 .subscribe(new Action1<PlaylistDeletedEvent>() {
@@ -129,6 +164,55 @@ public class MainActivity extends BaseActivity
                     }
                 });
     }
+
+    private void getPlaylistAndBind() {
+        LitePalHelper.queryCurrentPlaylist()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Playlist>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        playerController.setVisibility(View.GONE);
+                        PreferenceUtils.putBoolean(MainActivity.this, Constants.HAS_PLAYLIST, false);
+                    }
+
+                    @Override
+                    public void onNext(Playlist playlist) {
+                        MainActivity.this.playlist = playlist;
+                        setControllerInfo( playlist.getSongs().get(0));
+                        bindService(new Intent(MainActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
+                    }
+                });
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Logger.d(TAG + "onServiceConnected");
+            mPlayService = ((PlayService.PlayerBinder) service).getPlayService();
+            if (playOnceBind) {
+                mPlayService.play(playlist, index);
+                playerController.setPlaying(true);
+                setControllerInfo(mPlayService.getPlayList().getCurrentSong());
+            } else if (playlist != null) {
+                mPlayService.setPlayList(playlist);
+                mPlayService.getPlayList().prepare();
+            }
+            playlist = null;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Logger.d(TAG + "onServiceDisconnected");
+            mPlayService = null;
+        }
+    };
 
     void initNavigation() {
         navView.setNavigationItemSelectedListener(this);
@@ -231,27 +315,47 @@ public class MainActivity extends BaseActivity
 
         @Override
         public void play() {
-            if (playerController.isPlaying()) {
-                RemindUtils.showToast("播放");
+            if (mPlayService == null) {
+                return;
+            }
+            if (mPlayService.isPlaying()) {
+                mPlayService.pause();
             } else {
-                RemindUtils.showToast("暂停");
+                setControllerInfo(mPlayService.getPlayList().getNextSong());
+                mPlayService.play();
             }
         }
 
         @Override
         public void next() {
-            RemindUtils.showToast("下一首");
+            if (mPlayService == null) {
+                return;
+            }
+            setControllerInfo(mPlayService.getPlayList().getNextSong());
+            mPlayService.playNext();
         }
 
         @Override
         public void playList() {
-            RemindUtils.showToast("播放列表");
+            if (mPlayService == null) {
+                return;
+            }
+            Logger.d(TAG + mPlayService.getPlayList().getSongs());
         }
 
         @Override
         public void controller() {
-            RemindUtils.showToast("播放详情");
+            if (mPlayService == null) {
+                return;
+            }
+            RemindUtils.showToast(String.format("【%s】播放详情页面待续……",
+                    mPlayService.getPlayList().getCurrentSong().getTitle()));
         }
+    }
+
+    private void setControllerInfo(Song song) {
+        playerController.setSongName(song.getTitle());
+        playerController.setSinger(song.getArtist());
     }
 
     @Override
@@ -366,5 +470,15 @@ public class MainActivity extends BaseActivity
 
     void switchToDay() {
         RemindUtils.showToast("我是白云");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mPlayService != null) {
+            unbindService(mConnection);
+            mPlayService = null;
+        }
+        playOnceBind = false;
     }
 }

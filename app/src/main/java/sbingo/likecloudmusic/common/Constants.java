@@ -16,5 +16,7 @@ public class Constants {
     public static final String IS_SCANNED = "is_scanned";
     //无播放列表则不显示控制器
     public static final String HAS_PLAYLIST = "has_playlist";
+    //播放服务是否在运行中
+    public static final String PLAY_SERVICE_RUNNING = "Play_Service_Running";
 
 }

@@ -1,5 +1,6 @@
 package sbingo.likecloudmusic.db;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.style.SubscriptSpan;
 
@@ -122,6 +123,21 @@ public class LitePalHelper {
                     subscriber.onCompleted();
                 } else {
                     subscriber.onError(new Throwable("存储歌单出错！"));
+                }
+            }
+        });
+    }
+
+    public static Observable<Playlist> queryCurrentPlaylist() {
+        return Observable.create(new Observable.OnSubscribe<Playlist>() {
+            @Override
+            public void call(Subscriber<? super Playlist> subscriber) {
+                Playlist playlist =DataSupport.findLast(Playlist.class, true);
+                if (playlist==null) {
+                    subscriber.onError(new Throwable("歌单库为空"));
+                } else {
+                    subscriber.onNext(playlist);
+                    subscriber.onCompleted();
                 }
             }
         });

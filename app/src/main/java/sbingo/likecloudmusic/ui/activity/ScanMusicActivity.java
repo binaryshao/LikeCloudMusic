@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.MediaController;
 
 import com.orhanobut.logger.Logger;
 
@@ -21,12 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
+import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
 import sbingo.likecloudmusic.event.RxBus;
@@ -44,6 +47,8 @@ import sbingo.likecloudmusic.widget.OutPlayerController;
 
 public class ScanMusicActivity extends BaseActivity implements OutPlayerController.OutPlayerControllerListener {
 
+    private static final String TAG = "ScanMusicActivity :";
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tabs)
@@ -57,6 +62,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     private PlayService mPlayService;
     private Playlist playlist;
     private int index;
+    private boolean playOnceBind;
 
     @Override
     protected int getLayoutId() {
@@ -93,6 +99,11 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         playerController.setPlayerListener(this);
         if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
             playerController.setVisibility(View.VISIBLE);
+            if (PreferenceUtils.getBoolean(this, Constants.PLAY_SERVICE_RUNNING)) {
+                bindToService();
+            } else {
+                getPlaylistAndBind();
+            }
         }
         RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
@@ -104,6 +115,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         playlist = event.getPlaylist();
                         index = event.getIndex();
                         if (mPlayService == null) {
+                            playOnceBind = true;
                             bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
                         } else {
                             mPlayService.play(playlist, index);
@@ -118,6 +130,35 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                     @Override
                     public void call(PlaylistDeletedEvent event) {
                         playerController.setVisibility(View.GONE);
+                    }
+                });
+    }
+
+    private void bindToService() {
+        bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
+    }
+
+    private void getPlaylistAndBind() {
+        LitePalHelper.queryCurrentPlaylist()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Playlist>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        playerController.setVisibility(View.GONE);
+                        PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, false);
+                    }
+
+                    @Override
+                    public void onNext(Playlist playlist) {
+                        ScanMusicActivity.this.playlist = playlist;
+                        setControllerInfo( playlist.getSongs().get(0));
+                        bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
                     }
                 });
     }
@@ -143,20 +184,25 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Logger.d("onServiceConnected");
+            Logger.d(TAG + "onServiceConnected");
             mPlayService = ((PlayService.PlayerBinder) service).getPlayService();
-            mPlayService.play(playlist, index);
-            playerController.setPlaying(true);
+            if (playOnceBind) {
+                mPlayService.play(playlist, index);
+                playerController.setPlaying(true);
+                setControllerInfo(mPlayService.getPlayList().getCurrentSong());
+            } else if (playlist != null) {
+                mPlayService.setPlayList(playlist);
+                mPlayService.getPlayList().prepare();
+            }
             playlist = null;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Logger.d("onServiceDisconnected");
+            Logger.d(TAG + "onServiceDisconnected");
             mPlayService = null;
         }
     };
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -223,30 +269,50 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
             unbindService(mConnection);
             mPlayService = null;
         }
+        playOnceBind = false;
     }
 
     @Override
     public void play() {
+        if (mPlayService == null) {
+            return;
+        }
         if (mPlayService.isPlaying()) {
             mPlayService.pause();
         } else {
+            setControllerInfo(mPlayService.getPlayList().getNextSong());
             mPlayService.play();
         }
     }
 
     @Override
     public void next() {
+        if (mPlayService == null) {
+            return;
+        }
+        setControllerInfo(mPlayService.getPlayList().getNextSong());
         mPlayService.playNext();
     }
 
     @Override
     public void playList() {
-        Logger.d(mPlayService.getPlayList().getSongs());
+        if (mPlayService == null) {
+            return;
+        }
+        Logger.d(TAG + mPlayService.getPlayList().getSongs());
     }
 
     @Override
     public void controller() {
+        if (mPlayService == null) {
+            return;
+        }
         RemindUtils.showToast(String.format("【%s】播放详情页面待续……",
                 mPlayService.getPlayList().getCurrentSong().getTitle()));
+    }
+
+    private void setControllerInfo(Song song) {
+        playerController.setSongName(song.getTitle());
+        playerController.setSinger(song.getArtist());
     }
 }

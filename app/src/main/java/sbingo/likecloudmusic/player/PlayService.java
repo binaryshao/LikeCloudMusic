@@ -19,8 +19,11 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
+import sbingo.likecloudmusic.common.Constants;
+import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.utils.FileUtils;
+import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 
 public class PlayService extends Service implements MediaPlayer.OnCompletionListener {
@@ -65,6 +68,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mBinder = new PlayerBinder();
 
         executorService = Executors.newSingleThreadExecutor();
+
+        PreferenceUtils.putBoolean(MyApplication.getAppContext(), Constants.PLAY_SERVICE_RUNNING, true);
     }
 
     @Override
@@ -92,6 +97,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         super.onDestroy();
         mPlayer.reset();
         mPlayer.release();
+        PreferenceUtils.putBoolean(MyApplication.getAppContext(), Constants.PLAY_SERVICE_RUNNING, false);
     }
 
     public Playlist getPlayList() {
