@@ -18,5 +18,9 @@ public class Constants {
     public static final String HAS_PLAYLIST = "has_playlist";
     //播放服务是否在运行中
     public static final String PLAY_SERVICE_RUNNING = "Play_Service_Running";
+    //退出时保存的播放序号
+    public static final String PLAYING_INDEX = "playing_index";
+    //退出时保存的播放进度
+    public static final String PLAYING_PROGRESS = "playing_progress";
 
 }

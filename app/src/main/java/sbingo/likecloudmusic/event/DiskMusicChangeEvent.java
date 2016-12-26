@@ -9,7 +9,7 @@ import sbingo.likecloudmusic.bean.Song;
  * Date:   2016/12/19
  */
 
-public class MusicChangeEvent {
+public class DiskMusicChangeEvent {
 
     private int count;
 
@@ -31,7 +31,7 @@ public class MusicChangeEvent {
         this.count = count;
     }
 
-    public MusicChangeEvent(List<Song> songs) {
+    public DiskMusicChangeEvent(List<Song> songs) {
         this.songs = songs;
         count = songs.size();
     }

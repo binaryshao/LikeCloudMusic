@@ -13,7 +13,7 @@ import butterknife.OnClick;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
-import sbingo.likecloudmusic.event.MusicChangeEvent;
+import sbingo.likecloudmusic.event.DiskMusicChangeEvent;
 import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.ui.activity.ScanMusicActivity;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
@@ -109,10 +109,10 @@ public class LocalMusicFragment extends BaseFragment {
     }
 
     void registerDiskMusicEvent() {
-        RxBus.getInstance().toObservable(MusicChangeEvent.class)
-                .subscribe(new Action1<MusicChangeEvent>() {
+        RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
+                .subscribe(new Action1<DiskMusicChangeEvent>() {
                     @Override
-                    public void call(MusicChangeEvent musicChangeEvent) {
+                    public void call(DiskMusicChangeEvent musicChangeEvent) {
                         local.setCount(musicChangeEvent.getCount());
                     }
                 });

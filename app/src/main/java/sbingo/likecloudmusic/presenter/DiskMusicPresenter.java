@@ -16,8 +16,7 @@ import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.MyApplication;
-import sbingo.likecloudmusic.event.MusicChangeEvent;
-import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
+import sbingo.likecloudmusic.event.DiskMusicChangeEvent;
 import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.interactor.DiskMusicInteractor;
 import sbingo.likecloudmusic.ui.view.DiskMusicView;
@@ -97,7 +96,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
         } else {
             mView.onMusicLoaded(songs);
         }
-        RxBus.getInstance().post(new MusicChangeEvent(songs));
+        RxBus.getInstance().post(new DiskMusicChangeEvent(songs));
     }
 
     public void onSongError(Throwable throwable) {

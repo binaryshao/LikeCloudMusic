@@ -22,6 +22,10 @@
     <style name="AppTheme.Main">
         <item name="android:activityCloseExitAnimation">@anim/main_finish</item>
     </style>
+
+    <style name="progressStyle" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:color">@color/colorPrimary</item>
+    </style>
     
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

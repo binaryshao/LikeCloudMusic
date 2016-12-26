@@ -42,6 +42,7 @@ import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
 import sbingo.likecloudmusic.event.RxBus;
@@ -99,6 +100,10 @@ public class MainActivity extends BaseActivity
     private boolean isStopped;
     private static final long PROGRESS_UPDATE_INTERVAL = 1000;
     private Handler mHandler = new Handler();
+    /**
+     * 上次退出时保存的播放进度
+     */
+    private int lastProgress;
 
     @Override
     public int getLayoutId() {
@@ -167,6 +172,16 @@ public class MainActivity extends BaseActivity
                         playerController.setVisibility(View.GONE);
                     }
                 });
+        RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+                .subscribe(new Action1<PlayingMusicUpdateEvent>() {
+                    @Override
+                    public void call(PlayingMusicUpdateEvent event) {
+                        if (!isStopped) {
+                            setControllerInfo(event.getSong());
+                        }
+                    }
+                });
+
     }
 
     private void getPlaylistAndBind() {
@@ -188,7 +203,6 @@ public class MainActivity extends BaseActivity
                     @Override
                     public void onNext(Playlist playlist) {
                         MainActivity.this.playlist = playlist;
-                        setControllerInfo(playlist.getSongs().get(0));
                         bindService(new Intent(MainActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
                     }
                 });
@@ -203,11 +217,13 @@ public class MainActivity extends BaseActivity
             if (playOnceBind) {
                 mPlayService.play(playlist, index);
                 playerController.setPlaying(true);
-                setControllerInfo(mPlayService.getPlayList().getCurrentSong());
             } else if (playlist != null) { //加载出本地歌单时
-                mPlayService.setPlayList(playlist);
+                mPlayService.setPlaylist(playlist, PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_INDEX, 0));
                 mPlayService.getPlayList().prepare();
+                lastProgress = PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_PROGRESS, 0);
+                playerController.setPlayProgress(lastProgress);
             }
+            setControllerInfo(mPlayService.getPlayList().getCurrentSong());
             playlist = null;
         }
 
@@ -317,13 +333,16 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onResume() {
         super.onResume();
+        isStopped = false;
         if (mPlayService == null) {
             return;
         }
         if (mPlayService.isPlaying()) {
             playerController.setPlaying(true);
+            mHandler.post(progressCallback);
         } else {
             playerController.setPlaying(false);
+            playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
         }
         setControllerInfo(mPlayService.getPlayList().getCurrentSong());
     }
@@ -338,7 +357,8 @@ public class MainActivity extends BaseActivity
         @Override
         public void run() {
             if (!isStopped && mPlayService != null && mPlayService.isPlaying()) {
-                playerController.setPlayProgress(mPlayService.getProgress());
+                Logger.d("onProgressCallback:" + mPlayService.getProgressPercent());
+                playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
                 mHandler.postDelayed(this, PROGRESS_UPDATE_INTERVAL);
             }
         }
@@ -354,8 +374,15 @@ public class MainActivity extends BaseActivity
             }
             if (mPlayService.isPlaying()) {
                 mPlayService.pause();
+                mHandler.removeCallbacks(progressCallback);
             } else {
-                mPlayService.play();
+                if (lastProgress != 0) {
+                    mPlayService.seekTo(lastProgress);
+                    lastProgress = 0;
+                } else {
+                    mPlayService.play();
+                }
+                mHandler.post(progressCallback);
             }
         }
 
@@ -366,6 +393,7 @@ public class MainActivity extends BaseActivity
             }
             setControllerInfo(mPlayService.getPlayList().getNextSong());
             mPlayService.playNext();
+            mHandler.post(progressCallback);
         }
 
         @Override
@@ -509,6 +537,11 @@ public class MainActivity extends BaseActivity
     protected void onDestroy() {
         super.onDestroy();
         if (mPlayService != null) {
+            if (mPlayService.getPlayList() != null) {
+                PreferenceUtils.putInt(this, Constants.PLAYING_INDEX, mPlayService.getPlayList().getPlayingIndex());
+                PreferenceUtils.putInt(this, Constants.PLAYING_PROGRESS,
+                        (int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
+            }
             unbindService(mConnection);
             mPlayService = null;
         }

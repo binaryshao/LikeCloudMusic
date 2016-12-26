@@ -22,6 +22,8 @@ import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
+import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
@@ -104,8 +106,13 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         return mPlayList;
     }
 
-    public void setPlayList(Playlist mPlayList) {
+    public void setPlaylist(Playlist mPlayList) {
         this.mPlayList = mPlayList;
+    }
+
+    public void setPlaylist(Playlist mPlayList, int index) {
+        this.mPlayList = mPlayList;
+        this.mPlayList.setPlayingIndex(index);
     }
 
     public void play() {
@@ -181,7 +188,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         if (list == null) return;
 
         isPaused = false;
-        setPlayList(list);
+        setPlaylist(list);
         play();
     }
 
@@ -190,7 +197,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
         isPaused = false;
         list.setPlayingIndex(startIndex);
-        setPlayList(list);
+        setPlaylist(list);
         play();
     }
 
@@ -234,8 +241,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         return isPaused;
     }
 
-    public int getProgress() {
-        return mPlayer.getCurrentPosition() / mPlayer.getDuration();
+    public float getProgressPercent() {
+        return (float)mPlayer.getCurrentPosition() / (float)mPlayer.getDuration();
     }
 
     public void seekTo(int progress) {
@@ -267,6 +274,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                 next = mPlayList.next();
                 play();
             }
+            RxBus.getInstance().post(new PlayingMusicUpdateEvent(next));
         }
     }
 

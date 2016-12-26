@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -20,17 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
-import sbingo.likecloudmusic.db.LitePalHelper;
-import sbingo.likecloudmusic.event.MusicChangeEvent;
+import sbingo.likecloudmusic.event.DiskMusicChangeEvent;
+import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
 import sbingo.likecloudmusic.event.RxBus;
@@ -64,6 +62,12 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     private Playlist playlist;
     private int index;
     private boolean playOnceBind;
+    private static final long PROGRESS_UPDATE_INTERVAL = 1000;
+    private Handler mHandler = new Handler();
+    /**
+     * 上次退出时保存的播放进度
+     */
+    private int lastProgress;
 
     @Override
     protected int getLayoutId() {
@@ -98,10 +102,10 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     }
 
     void registerDiskMusicEvent() {
-        RxBus.getInstance().toObservable(MusicChangeEvent.class)
-                .subscribe(new Action1<MusicChangeEvent>() {
+        RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
+                .subscribe(new Action1<DiskMusicChangeEvent>() {
                     @Override
-                    public void call(MusicChangeEvent event) {
+                    public void call(DiskMusicChangeEvent event) {
                         diskMusicFragments[1].onMusicLoaded(event.getSongs());
                         diskMusicFragments[2].onMusicLoaded(event.getSongs());
                         diskMusicFragments[3].onMusicLoaded(event.getSongs());
@@ -128,9 +132,13 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                             playOnceBind = true;
                             bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
                         } else {
+                            if (mPlayService.isPlaying()) {
+                                mHandler.removeCallbacks(progressCallback);
+                            }
                             mPlayService.play(playlist, index);
                             playerController.setPlaying(true);
                             setControllerInfo(playlist.getCurrentSong());
+                            mHandler.post(progressCallback);
                             playlist = null;
                         }
                         PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, true);
@@ -141,6 +149,13 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                     @Override
                     public void call(PlaylistDeletedEvent event) {
                         playerController.setVisibility(View.GONE);
+                    }
+                });
+        RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+                .subscribe(new Action1<PlayingMusicUpdateEvent>() {
+                    @Override
+                    public void call(PlayingMusicUpdateEvent event) {
+                        setControllerInfo(event.getSong());
                     }
                 });
     }
@@ -176,8 +191,13 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
             if (playOnceBind) { //点击歌曲列表时
                 mPlayService.play(playlist, index);
                 playerController.setPlaying(true);
-            } else if (mPlayService.isPlaying()) { //从主页面进入时
+                mHandler.post(progressCallback);
+            } else if (mPlayService.isPlaying()) { //从主页面进入时可能已经在播放ing
                 playerController.setPlaying(true);
+                mHandler.post(progressCallback);
+            } else {
+                lastProgress = PreferenceUtils.getInt(ScanMusicActivity.this, Constants.PLAYING_PROGRESS, 0);
+                playerController.setPlayProgress(lastProgress);
             }
             setControllerInfo(mPlayService.getPlayList().getCurrentSong());
             playlist = null;
@@ -189,6 +209,18 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
             mPlayService = null;
         }
     };
+
+
+    private Runnable progressCallback = new Runnable() {
+        @Override
+        public void run() {
+            if (mPlayService != null && mPlayService.isPlaying()) {
+                playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
+                mHandler.postDelayed(this, PROGRESS_UPDATE_INTERVAL);
+            }
+        }
+    };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -250,6 +282,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
             mPlayService = null;
         }
         playOnceBind = false;
+        mHandler.removeCallbacks(progressCallback);
     }
 
     @Override
@@ -259,8 +292,15 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         }
         if (mPlayService.isPlaying()) {
             mPlayService.pause();
+            mHandler.removeCallbacks(progressCallback);
         } else {
-            mPlayService.play();
+            if (lastProgress != 0) {
+                mPlayService.seekTo(lastProgress);
+                lastProgress = 0;
+            } else {
+                mPlayService.play();
+            }
+            mHandler.post(progressCallback);
         }
     }
 
@@ -271,6 +311,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         }
         setControllerInfo(mPlayService.getPlayList().getNextSong());
         mPlayService.playNext();
+        mHandler.post(progressCallback);
     }
 
     @Override
