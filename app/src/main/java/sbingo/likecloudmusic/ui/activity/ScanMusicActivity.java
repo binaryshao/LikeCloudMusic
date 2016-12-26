@@ -176,7 +176,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
             if (playOnceBind) { //点击歌曲列表时
                 mPlayService.play(playlist, index);
                 playerController.setPlaying(true);
-            } else if (mPlayService.isPlaying()) {
+            } else if (mPlayService.isPlaying()) { //从主页面进入时
                 playerController.setPlaying(true);
             }
             setControllerInfo(mPlayService.getPlayList().getCurrentSong());

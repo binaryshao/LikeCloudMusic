@@ -3,6 +3,7 @@ package sbingo.likecloudmusic.ui.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -95,6 +96,9 @@ public class MainActivity extends BaseActivity
     private Playlist playlist;
     private int index;
     private boolean playOnceBind;
+    private boolean isStopped;
+    private static final long PROGRESS_UPDATE_INTERVAL = 1000;
+    private Handler mHandler = new Handler();
 
     @Override
     public int getLayoutId() {
@@ -134,6 +138,7 @@ public class MainActivity extends BaseActivity
             getPlaylistAndBind();
         }
 
+        //之后将有多处界面可以发出PlaylistCreatedEvent事件
         RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
                     @Override
@@ -143,7 +148,7 @@ public class MainActivity extends BaseActivity
                         }
                         playlist = event.getPlaylist();
                         index = event.getIndex();
-                        if (mPlayService == null) {
+                        if (mPlayService == null) { //列表从无到有才会进入此处
                             playOnceBind = true;
                             bindService(new Intent(MainActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
                         } else {
@@ -322,6 +327,22 @@ public class MainActivity extends BaseActivity
         }
         setControllerInfo(mPlayService.getPlayList().getCurrentSong());
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isStopped = true;
+    }
+
+    private Runnable progressCallback = new Runnable() {
+        @Override
+        public void run() {
+            if (!isStopped && mPlayService != null && mPlayService.isPlaying()) {
+                playerController.setPlayProgress(mPlayService.getProgress());
+                mHandler.postDelayed(this, PROGRESS_UPDATE_INTERVAL);
+            }
+        }
+    };
 
     //播放控制器
     class MyPlayerListener implements OutPlayerController.OutPlayerControllerListener {
