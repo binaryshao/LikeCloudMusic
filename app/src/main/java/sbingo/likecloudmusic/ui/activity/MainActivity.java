@@ -183,7 +183,7 @@ public class MainActivity extends BaseActivity
                     @Override
                     public void onNext(Playlist playlist) {
                         MainActivity.this.playlist = playlist;
-                        setControllerInfo( playlist.getSongs().get(0));
+                        setControllerInfo(playlist.getSongs().get(0));
                         bindService(new Intent(MainActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
                     }
                 });
@@ -199,7 +199,7 @@ public class MainActivity extends BaseActivity
                 mPlayService.play(playlist, index);
                 playerController.setPlaying(true);
                 setControllerInfo(mPlayService.getPlayList().getCurrentSong());
-            } else if (playlist != null) {
+            } else if (playlist != null) { //加载出本地歌单时
                 mPlayService.setPlayList(playlist);
                 mPlayService.getPlayList().prepare();
             }
@@ -309,6 +309,20 @@ public class MainActivity extends BaseActivity
         return null;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mPlayService == null) {
+            return;
+        }
+        if (mPlayService.isPlaying()) {
+            playerController.setPlaying(true);
+        } else {
+            playerController.setPlaying(false);
+        }
+        setControllerInfo(mPlayService.getPlayList().getCurrentSong());
+    }
+
     //播放控制器
     class MyPlayerListener implements OutPlayerController.OutPlayerControllerListener {
 
@@ -320,7 +334,6 @@ public class MainActivity extends BaseActivity
             if (mPlayService.isPlaying()) {
                 mPlayService.pause();
             } else {
-                setControllerInfo(mPlayService.getPlayList().getNextSong());
                 mPlayService.play();
             }
         }

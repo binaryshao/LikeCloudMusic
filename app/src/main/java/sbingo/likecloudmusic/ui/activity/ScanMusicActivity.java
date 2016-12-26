@@ -113,11 +113,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         playerController.setPlayerListener(this);
         if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
             playerController.setVisibility(View.VISIBLE);
-            if (PreferenceUtils.getBoolean(this, Constants.PLAY_SERVICE_RUNNING)) {
-                bindToService();
-            } else {
-                getPlaylistAndBind();
-            }
+            bindToService();
         }
         RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
@@ -134,6 +130,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         } else {
                             mPlayService.play(playlist, index);
                             playerController.setPlaying(true);
+                            setControllerInfo(playlist.getCurrentSong());
                             playlist = null;
                         }
                         PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, true);
@@ -152,30 +149,6 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
     }
 
-    private void getPlaylistAndBind() {
-        LitePalHelper.queryCurrentPlaylist()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Playlist>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        playerController.setVisibility(View.GONE);
-                        PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, false);
-                    }
-
-                    @Override
-                    public void onNext(Playlist playlist) {
-                        ScanMusicActivity.this.playlist = playlist;
-                        setControllerInfo( playlist.getSongs().get(0));
-                        bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
-                    }
-                });
-    }
 
     void initViewPager() {
         viewPager.setAdapter(new LocalPagerAdapter(getSupportFragmentManager(), createFragments()));
@@ -200,14 +173,13 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         public void onServiceConnected(ComponentName name, IBinder service) {
             Logger.d(TAG + "onServiceConnected");
             mPlayService = ((PlayService.PlayerBinder) service).getPlayService();
-            if (playOnceBind) {
+            if (playOnceBind) { //点击歌曲列表时
                 mPlayService.play(playlist, index);
                 playerController.setPlaying(true);
-                setControllerInfo(mPlayService.getPlayList().getCurrentSong());
-            } else if (playlist != null) {
-                mPlayService.setPlayList(playlist);
-                mPlayService.getPlayList().prepare();
+            } else if (mPlayService.isPlaying()) {
+                playerController.setPlaying(true);
             }
+            setControllerInfo(mPlayService.getPlayList().getCurrentSong());
             playlist = null;
         }
 
@@ -288,7 +260,6 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         if (mPlayService.isPlaying()) {
             mPlayService.pause();
         } else {
-            setControllerInfo(mPlayService.getPlayList().getNextSong());
             mPlayService.play();
         }
     }
