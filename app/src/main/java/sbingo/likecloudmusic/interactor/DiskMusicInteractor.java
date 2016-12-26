@@ -3,6 +3,8 @@ package sbingo.likecloudmusic.interactor;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.orhanobut.logger.Logger;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;

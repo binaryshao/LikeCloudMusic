@@ -1,6 +1,5 @@
 package sbingo.likecloudmusic.ui.fragment.LocalMusic;
 
-import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

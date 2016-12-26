@@ -96,7 +96,6 @@ public class MainActivity extends BaseActivity
     private int index;
     private boolean playOnceBind;
 
-
     @Override
     public int getLayoutId() {
         return R.layout.activity_main;

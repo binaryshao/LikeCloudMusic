@@ -97,7 +97,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
         } else {
             mView.onMusicLoaded(songs);
         }
-        RxBus.getInstance().post(new MusicChangeEvent(songs.size()));
+        RxBus.getInstance().post(new MusicChangeEvent(songs));
     }
 
     public void onSongError(Throwable throwable) {

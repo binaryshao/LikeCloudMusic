@@ -132,8 +132,8 @@ public class LitePalHelper {
         return Observable.create(new Observable.OnSubscribe<Playlist>() {
             @Override
             public void call(Subscriber<? super Playlist> subscriber) {
-                Playlist playlist =DataSupport.findLast(Playlist.class, true);
-                if (playlist==null) {
+                Playlist playlist = DataSupport.findLast(Playlist.class, true);
+                if (playlist == null) {
                     subscriber.onError(new Throwable("歌单库为空"));
                 } else {
                     subscriber.onNext(playlist);
