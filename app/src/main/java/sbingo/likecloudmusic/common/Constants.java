@@ -22,5 +22,7 @@ public class Constants {
     public static final String PLAYING_INDEX = "playing_index";
     //退出时保存的播放进度
     public static final String PLAYING_PROGRESS = "playing_progress";
+    //夜间模式
+    public static final String IS_NIGHT = "is_night";
 
 }

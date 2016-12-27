@@ -1,8 +1,10 @@
 package sbingo.likecloudmusic.ui.activity;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -22,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -60,7 +64,7 @@ import sbingo.likecloudmusic.widget.OutPlayerController;
  */
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final String TAG = "MainActivity :";
 
@@ -88,7 +92,6 @@ public class MainActivity extends BaseActivity
 
     TextView grade;
     TextView theme;
-    SwitchCompat nightSwitch;
 
     RadioGroup radioGroup;
 
@@ -132,6 +135,7 @@ public class MainActivity extends BaseActivity
         toggle.syncState();
 
         initNavigation();
+        initNightMode();
         initRadioGroup();
         initViewPager();
         initPlayerController();
@@ -268,13 +272,12 @@ public class MainActivity extends BaseActivity
         signIn.setOnClickListener(this);
 
         //Menu内的控件
+        baseNavView = navView;
         grade = (TextView) MenuItemCompat.getActionView(navView.getMenu().findItem(R.id.shop));
         theme = (TextView) MenuItemCompat.getActionView(navView.getMenu().findItem(R.id.theme));
-        nightSwitch = (SwitchCompat) MenuItemCompat.getActionView(navView.getMenu().findItem(R.id.night_mode));
 
         grade.setText("100积分");
         theme.setText("典雅黑");
-        nightSwitch.setOnCheckedChangeListener(this);
     }
 
 
@@ -519,23 +522,6 @@ public class MainActivity extends BaseActivity
                 signIn.setText("已签到");
                 break;
         }
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-        if (isChecked) {
-            switchToNight();
-        } else {
-            switchToDay();
-        }
-    }
-
-    void switchToNight() {
-        RemindUtils.showToast("我是黑土");
-    }
-
-    void switchToDay() {
-        RemindUtils.showToast("我是白云");
     }
 
     @Override
