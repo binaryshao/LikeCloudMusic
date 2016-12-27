@@ -59,7 +59,8 @@
                 android:id="@+id/song_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
+                android:textColor="@color/primary_heavy_text"
+                android:textSize="@dimen/sp_16"
                 tools:text="红玫瑰" />
 
             <TextView
@@ -68,6 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_10"
                 android:textColor="@color/primary_light_text"
+                android:textSize="@dimen/sp_14"
                 tools:text="陈奕迅" />
         </LinearLayout>
 

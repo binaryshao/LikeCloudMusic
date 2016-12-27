@@ -135,7 +135,6 @@ public class MainActivity extends BaseActivity
         toggle.syncState();
 
         initNavigation();
-        initNightMode();
         initRadioGroup();
         initViewPager();
         initPlayerController();

@@ -12,13 +12,13 @@
               android:paddingBottom="@dimen/dp_18"
               android:paddingTop="@dimen/dp_18"
               android:text="@string/settings"
-              android:textColor="@color/black"/>
+              android:textColor="@color/primary_heavy_text"/>
 
     <View android:layout_width="1dp"
           android:layout_height="match_parent"
           android:layout_marginBottom="10dp"
           android:layout_marginTop="@dimen/dp_10"
-          android:background="@color/alpha_50_black"/>
+          android:background="@color/divider_color"/>
 
     <TextView android:id="@+id/quit"
               android:layout_width="0dp"
@@ -29,6 +29,6 @@
               android:paddingBottom="@dimen/dp_18"
               android:paddingTop="@dimen/dp_18"
               android:text="@string/quit"
-              android:textColor="@color/black"/>
+              android:textColor="@color/primary_heavy_text"/>
 
 </LinearLayout>

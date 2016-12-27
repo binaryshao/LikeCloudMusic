@@ -56,9 +56,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected ActivityComponent mActivityComponent;
 
-    private boolean mIsAddedView;
-    private WindowManager mWindowManager = null;
-    private View mNightView = null;
     NavigationView baseNavView;
     SwitchCompat nightSwitch;
 
@@ -107,17 +104,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     void initNightMode() {
+        if (PreferenceUtils.getBoolean(this, Constants.IS_NIGHT)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         if (this instanceof MainActivity) {
             nightSwitch = (SwitchCompat) MenuItemCompat.getActionView(baseNavView.getMenu().findItem(R.id.night_mode));
-            if (PreferenceUtils.getBoolean(this, Constants.IS_NIGHT)) {
-                nightSwitch.setChecked(true);
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                initNightView();
-                mNightView.setBackgroundResource(R.color.night_mask);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-
+            nightSwitch.setChecked(PreferenceUtils.getBoolean(this, Constants.IS_NIGHT) ? true : false);
             nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -134,39 +128,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     void switchToNight() {
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        initNightView();
-        mNightView.setBackgroundResource(R.color.night_mask);
         PreferenceUtils.putBoolean(this, Constants.IS_NIGHT, true);
     }
 
     void switchToDay() {
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        mNightView.setBackgroundResource(R.color.transparent);
         PreferenceUtils.putBoolean(this, Constants.IS_NIGHT, false);
-    }
-
-    private void initNightView() {
-        if (mIsAddedView) {
-            return;
-        }
-        // 增加夜间模式蒙板
-        WindowManager.LayoutParams nightViewParam = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.TYPE_APPLICATION,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSPARENT);
-        mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        mNightView = new View(this);
-        mWindowManager.addView(mNightView, nightViewParam);
-        mIsAddedView = true;
-    }
-
-    private void removeNightModeMask() {
-        if (mIsAddedView) {
-            // 移除夜间模式蒙板
-            mWindowManager.removeViewImmediate(mNightView);
-            mWindowManager = null;
-            mNightView = null;
-        }
     }
 
     @Override
@@ -176,6 +143,5 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (provideSubscription() != null) {
             provideSubscription().clear();
         }
-        removeNightModeMask();
     }
 }

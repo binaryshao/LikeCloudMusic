@@ -65,6 +65,7 @@
             android:layout_marginTop="@dimen/dp_5"
             android:drawableLeft="@drawable/yes_30"
             android:drawablePadding="@dimen/dp_5"
+            android:textColor="@color/primary_light_text"
             android:textSize="@dimen/sp_12"
             tools:text="@string/info_test" />
     </RelativeLayout>
