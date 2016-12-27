@@ -70,12 +70,14 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
         rView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new DiskMusicAdapter(currentType, this, getActivity());
         rView.setAdapter(mAdapter);
-        if (PreferenceUtils.getBoolean(getActivity(), Constants.IS_SCANNED)) {
-            Logger.d("loadMusicFromDB");
-            mPresenter.loadMusicFromDB();
-        } else {
-            Logger.d("loadMusicFromDisk");
-            scanDiskMusic();
+        if (currentType == 1) {
+            if (PreferenceUtils.getBoolean(getActivity(), Constants.IS_SCANNED)) {
+                Logger.d("loadMusicFromDB");
+                mPresenter.loadMusicFromDB();
+            } else {
+                Logger.d("loadMusicFromDisk");
+                scanDiskMusic();
+            }
         }
     }
 

@@ -33,7 +33,7 @@
         <ImageView
             android:id="@+id/play"
             android:layout_width="@dimen/dp_72"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_32"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/next"
             android:src="@drawable/play" />

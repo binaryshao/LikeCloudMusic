@@ -22,8 +22,10 @@ import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.event.PausePlayingEvent;
 import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
 import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.event.StartPlayingEvent;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
@@ -135,6 +137,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                     mPlayer.setDataSource(song.getPath());
                     mPlayer.prepare();
                     mPlayer.start();
+                    RxBus.getInstance().post(new StartPlayingEvent());
                 } catch (FileNotFoundException e) {
                     noFileWhilePlay(song);
                 } catch (IOException e) {
@@ -181,6 +184,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         if (isPlaying()) {
             mPlayer.pause();
             isPaused = true;
+            RxBus.getInstance().post(new PausePlayingEvent());
         }
     }
 
@@ -242,18 +246,27 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     }
 
     public float getProgressPercent() {
-        return (float)mPlayer.getCurrentPosition() / (float)mPlayer.getDuration();
+        return (float) mPlayer.getCurrentPosition() / (float) mPlayer.getDuration();
     }
 
     public void seekTo(int progress) {
         if (mPlayList.getSongs().isEmpty()) return;
 
         Song currentSong = mPlayList.getCurrentSong();
+        try {
+            mPlayer.reset();
+            mPlayer.setDataSource(currentSong.getPath());
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (currentSong != null) {
             if (currentSong.getDuration() <= progress) {
                 onCompletion(mPlayer);
             } else {
                 mPlayer.seekTo(progress);
+                RxBus.getInstance().post(new StartPlayingEvent());
             }
         }
     }

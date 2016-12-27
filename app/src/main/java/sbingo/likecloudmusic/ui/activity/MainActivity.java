@@ -42,10 +42,12 @@ import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.event.PausePlayingEvent;
 import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
 import sbingo.likecloudmusic.event.PlaylistDeletedEvent;
 import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.event.StartPlayingEvent;
 import sbingo.likecloudmusic.player.PlayService;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
@@ -97,7 +99,6 @@ public class MainActivity extends BaseActivity
     private Playlist playlist;
     private int index;
     private boolean playOnceBind;
-    private boolean isStopped;
     private static final long PROGRESS_UPDATE_INTERVAL = 1000;
     private Handler mHandler = new Handler();
     /**
@@ -134,6 +135,7 @@ public class MainActivity extends BaseActivity
         initRadioGroup();
         initViewPager();
         initPlayerController();
+        registerEvents();
     }
 
     void initPlayerController() {
@@ -142,7 +144,9 @@ public class MainActivity extends BaseActivity
             playerController.setVisibility(View.VISIBLE);
             getPlaylistAndBind();
         }
+    }
 
+    void registerEvents() {
         //之后将有多处界面可以发出PlaylistCreatedEvent事件
         RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
@@ -176,12 +180,23 @@ public class MainActivity extends BaseActivity
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
-                        if (!isStopped) {
-                            setControllerInfo(event.getSong());
-                        }
+                        setControllerInfo(event.getSong());
                     }
                 });
-
+        RxBus.getInstance().toObservable(StartPlayingEvent.class)
+                .subscribe(new Action1<StartPlayingEvent>() {
+                    @Override
+                    public void call(StartPlayingEvent event) {
+                        mHandler.post(progressCallback);
+                    }
+                });
+        RxBus.getInstance().toObservable(PausePlayingEvent.class)
+                .subscribe(new Action1<PausePlayingEvent>() {
+                    @Override
+                    public void call(PausePlayingEvent event) {
+                        mHandler.removeCallbacks(progressCallback);
+                    }
+                });
     }
 
     private void getPlaylistAndBind() {
@@ -218,6 +233,8 @@ public class MainActivity extends BaseActivity
                 mPlayService.play(playlist, index);
                 playerController.setPlaying(true);
             } else if (playlist != null) { //加载出本地歌单时
+                Logger.d("读取播放歌曲序号：" + PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_INDEX));
+                Logger.d("读取播放歌曲进度：" + PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_PROGRESS));
                 mPlayService.setPlaylist(playlist, PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_INDEX, 0));
                 mPlayService.getPlayList().prepare();
                 lastProgress = PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_PROGRESS, 0);
@@ -333,31 +350,21 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        isStopped = false;
         if (mPlayService == null) {
             return;
         }
         if (mPlayService.isPlaying()) {
             playerController.setPlaying(true);
-            mHandler.post(progressCallback);
         } else {
             playerController.setPlaying(false);
-            playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
         }
         setControllerInfo(mPlayService.getPlayList().getCurrentSong());
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        isStopped = true;
     }
 
     private Runnable progressCallback = new Runnable() {
         @Override
         public void run() {
-            if (!isStopped && mPlayService != null && mPlayService.isPlaying()) {
-                Logger.d("onProgressCallback:" + mPlayService.getProgressPercent());
+            if (mPlayService != null && mPlayService.isPlaying()) {
                 playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
                 mHandler.postDelayed(this, PROGRESS_UPDATE_INTERVAL);
             }
@@ -374,15 +381,14 @@ public class MainActivity extends BaseActivity
             }
             if (mPlayService.isPlaying()) {
                 mPlayService.pause();
-                mHandler.removeCallbacks(progressCallback);
             } else {
                 if (lastProgress != 0) {
-                    mPlayService.seekTo(lastProgress);
+                    int songProgress = (int) (mPlayService.getPlayList().getCurrentSong().getDuration() * (float) lastProgress / (float) playerController.getProgressMax());
+                    mPlayService.seekTo(songProgress);
                     lastProgress = 0;
                 } else {
                     mPlayService.play();
                 }
-                mHandler.post(progressCallback);
             }
         }
 
@@ -393,7 +399,6 @@ public class MainActivity extends BaseActivity
             }
             setControllerInfo(mPlayService.getPlayList().getNextSong());
             mPlayService.playNext();
-            mHandler.post(progressCallback);
         }
 
         @Override
@@ -539,8 +544,9 @@ public class MainActivity extends BaseActivity
         if (mPlayService != null) {
             if (mPlayService.getPlayList() != null) {
                 PreferenceUtils.putInt(this, Constants.PLAYING_INDEX, mPlayService.getPlayList().getPlayingIndex());
-                PreferenceUtils.putInt(this, Constants.PLAYING_PROGRESS,
-                        (int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
+                PreferenceUtils.putInt(this, Constants.PLAYING_PROGRESS, playerController.getPlayProgress());
+                Logger.d("保存播放歌曲序号：" + PreferenceUtils.getInt(this, Constants.PLAYING_INDEX));
+                Logger.d("保存播放歌曲进度：" + PreferenceUtils.getInt(this, Constants.PLAYING_PROGRESS));
             }
             unbindService(mConnection);
             mPlayService = null;

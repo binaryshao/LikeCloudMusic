@@ -126,6 +126,10 @@ public class OutPlayerController extends FrameLayout {
         playProgress.setProgress(progress);
     }
 
+    public int getPlayProgress() {
+        return playProgress.getProgress();
+    }
+
     public int getProgressMax() {
         return playProgress.getMax();
     }

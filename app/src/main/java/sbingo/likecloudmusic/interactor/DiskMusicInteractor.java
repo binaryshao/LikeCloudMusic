@@ -57,18 +57,6 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
                         return LitePalHelper.clearAndInsertSongs(songs);
                     }
                 })
-                .doOnNext(new Action1<List<Song>>() {
-                    @Override
-                    public void call(List<Song> songs) {
-                        Collections.sort(songs, new Comparator<Song>() {
-                            @Override
-                            public int compare(Song left, Song right) {
-                                return left.getDisplayName().compareTo(right.getDisplayName());
-                            }
-                        });
-
-                    }
-                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<Song>>() {
