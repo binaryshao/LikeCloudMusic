@@ -37,6 +37,7 @@ import com.orhanobut.logger.Logger;
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -98,7 +99,7 @@ public class MainActivity extends BaseActivity
     boolean fromViewPager;
     boolean fromRadioGroup;
 
-    private PlayService mPlayService;
+    private static PlayService mPlayService;
     private Playlist playlist;
     private int index;
     private boolean playOnceBind;
@@ -108,6 +109,8 @@ public class MainActivity extends BaseActivity
      * 上次退出时保存的播放进度
      */
     private int lastProgress;
+    private Intent serviceIntent;
+    private boolean isBinded;
 
     @Override
     public int getLayoutId() {
@@ -139,19 +142,24 @@ public class MainActivity extends BaseActivity
         initViewPager();
         initPlayerController();
         registerEvents();
+        serviceIntent = new Intent(this, PlayService.class);
     }
 
     void initPlayerController() {
         playerController.setPlayerListener(new MyPlayerListener());
-        if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
+        if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST) && mPlayService == null) {
             playerController.setVisibility(View.VISIBLE);
             getPlaylistAndBind();
+        } else if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST) && mPlayService != null) {
+            playerController.setVisibility(View.VISIBLE);
+            playerController.setPlaying(true);
+            mHandler.post(progressCallback);
         }
     }
 
     void registerEvents() {
         //之后将有多处界面可以发出PlaylistCreatedEvent事件
-        RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
+        Subscription createdSubscription = RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
                     @Override
                     public void call(PlaylistCreatedEvent event) {
@@ -163,43 +171,47 @@ public class MainActivity extends BaseActivity
                         if (mPlayService == null) { //列表从无到有才会进入此处
                             playOnceBind = true;
                             bindService(new Intent(MainActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
-                        } else {
+                        } else { //从“本地音乐”发出的事件不用执行操作
                             mPlayService.play(playlist, index);
                             playerController.setPlaying(true);
                             playlist = null;
                         }
                         PreferenceUtils.putBoolean(MainActivity.this, Constants.HAS_PLAYLIST, true);
                     }
-
                 });
-        RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
+        Subscription deletedSubscription =RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
                 .subscribe(new Action1<PlaylistDeletedEvent>() {
                     @Override
                     public void call(PlaylistDeletedEvent event) {
                         playerController.setVisibility(View.GONE);
                     }
                 });
-        RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+        Subscription updateSubscription =RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
                         setControllerInfo(event.getSong());
                     }
                 });
-        RxBus.getInstance().toObservable(StartPlayingEvent.class)
+        Subscription startSubscription =RxBus.getInstance().toObservable(StartPlayingEvent.class)
                 .subscribe(new Action1<StartPlayingEvent>() {
                     @Override
                     public void call(StartPlayingEvent event) {
                         mHandler.post(progressCallback);
                     }
                 });
-        RxBus.getInstance().toObservable(PausePlayingEvent.class)
+        Subscription pauseSubscription =RxBus.getInstance().toObservable(PausePlayingEvent.class)
                 .subscribe(new Action1<PausePlayingEvent>() {
                     @Override
                     public void call(PausePlayingEvent event) {
                         mHandler.removeCallbacks(progressCallback);
                     }
                 });
+        mSubscriptions.add(createdSubscription);
+        mSubscriptions.add(deletedSubscription);
+        mSubscriptions.add(updateSubscription);
+        mSubscriptions.add(startSubscription);
+        mSubscriptions.add(pauseSubscription);
     }
 
     private void getPlaylistAndBind() {
@@ -232,7 +244,9 @@ public class MainActivity extends BaseActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
             Logger.d(TAG + "onServiceConnected");
             mPlayService = ((PlayService.PlayerBinder) service).getPlayService();
+            isBinded = true;
             if (playOnceBind) {
+                playOnceBind = false;
                 mPlayService.play(playlist, index);
                 playerController.setPlaying(true);
             } else if (playlist != null) { //加载出本地歌单时
@@ -526,6 +540,10 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Logger.d("MainActivity onDestroy");
+        if (isModeChanged && mPlayService != null) {
+            startService(serviceIntent);
+        }
         if (mPlayService != null) {
             if (mPlayService.getPlayList() != null) {
                 PreferenceUtils.putInt(this, Constants.PLAYING_INDEX, mPlayService.getPlayList().getPlayingIndex());
@@ -533,9 +551,15 @@ public class MainActivity extends BaseActivity
                 Logger.d("保存播放歌曲序号：" + PreferenceUtils.getInt(this, Constants.PLAYING_INDEX));
                 Logger.d("保存播放歌曲进度：" + PreferenceUtils.getInt(this, Constants.PLAYING_PROGRESS));
             }
-            unbindService(mConnection);
-            mPlayService = null;
+            if (isBinded) {
+                isBinded = false;
+                unbindService(mConnection);
+            }
+            if (!isModeChanged) {
+                stopService(serviceIntent);
+                mPlayService = null;
+            }
+            isModeChanged = false;
         }
-        playOnceBind = false;
     }
 }

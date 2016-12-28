@@ -1,21 +1,17 @@
 package sbingo.likecloudmusic.ui.activity;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 
@@ -56,8 +52,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected ActivityComponent mActivityComponent;
 
-    NavigationView baseNavView;
-    SwitchCompat nightSwitch;
+    protected NavigationView baseNavView;
+    protected SwitchCompat nightSwitch;
+    protected static boolean isModeChanged;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,7 +106,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-        if (this instanceof MainActivity) {
+        if (this instanceof MainActivity && baseNavView != null) {
             nightSwitch = (SwitchCompat) MenuItemCompat.getActionView(baseNavView.getMenu().findItem(R.id.night_mode));
             nightSwitch.setChecked(PreferenceUtils.getBoolean(this, Constants.IS_NIGHT) ? true : false);
             nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -120,6 +117,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     } else {
                         switchToDay();
                     }
+                    isModeChanged = true;
                     recreate();
                 }
             });

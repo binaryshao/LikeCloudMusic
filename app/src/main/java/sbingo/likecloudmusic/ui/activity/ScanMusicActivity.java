@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
@@ -113,7 +114,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     }
 
     void registerEvents() {
-        RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
+        Subscription changeSubscription = RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
                 .subscribe(new Action1<DiskMusicChangeEvent>() {
                     @Override
                     public void call(DiskMusicChangeEvent event) {
@@ -122,7 +123,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         diskMusicFragments[3].onMusicLoaded(event.getSongs());
                     }
                 });
-        RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
+        Subscription createdSubscription = RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
                     @Override
                     public void call(PlaylistCreatedEvent event) {
@@ -131,6 +132,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         }
                         playlist = event.getPlaylist();
                         index = event.getIndex();
+                        Logger.d(index + "");
                         if (mPlayService == null) {
                             playOnceBind = true;
                             bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
@@ -147,34 +149,40 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, true);
                     }
                 });
-        RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
+        Subscription deletedSubscription = RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
                 .subscribe(new Action1<PlaylistDeletedEvent>() {
                     @Override
                     public void call(PlaylistDeletedEvent event) {
                         playerController.setVisibility(View.GONE);
                     }
                 });
-        RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+        Subscription updateSubscription = RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
                         setControllerInfo(event.getSong());
                     }
                 });
-        RxBus.getInstance().toObservable(StartPlayingEvent.class)
+        Subscription startSubscription = RxBus.getInstance().toObservable(StartPlayingEvent.class)
                 .subscribe(new Action1<StartPlayingEvent>() {
                     @Override
                     public void call(StartPlayingEvent event) {
                         mHandler.post(progressCallback);
                     }
                 });
-        RxBus.getInstance().toObservable(PausePlayingEvent.class)
+        Subscription pauseSubscription = RxBus.getInstance().toObservable(PausePlayingEvent.class)
                 .subscribe(new Action1<PausePlayingEvent>() {
                     @Override
                     public void call(PausePlayingEvent event) {
                         mHandler.removeCallbacks(progressCallback);
                     }
                 });
+        mSubscriptions.add(changeSubscription);
+        mSubscriptions.add(createdSubscription);
+        mSubscriptions.add(deletedSubscription);
+        mSubscriptions.add(updateSubscription);
+        mSubscriptions.add(startSubscription);
+        mSubscriptions.add(pauseSubscription);
     }
 
     private void bindToService() {
@@ -230,9 +238,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     private Runnable progressCallback = new Runnable() {
         @Override
         public void run() {
-            Logger.d("progressCallback");
             if (mPlayService != null && mPlayService.isPlaying()) {
-                Logger.d("当前进度: " + (int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
                 playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
                 mHandler.postDelayed(this, PROGRESS_UPDATE_INTERVAL);
             }
@@ -295,6 +301,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Logger.d("ScanMusicActivity onDestroy");
         if (mPlayService != null) {
             unbindService(mConnection);
             mPlayService = null;

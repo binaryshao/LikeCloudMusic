@@ -78,6 +78,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Logger.d(TAG + "onStartCommand");
         String action = intent.getAction();
         if (ACTION_PLAY_TOGGLE.equals(action)) {
             if (isPlaying()) {
