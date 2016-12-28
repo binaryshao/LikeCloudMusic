@@ -1,6 +1,7 @@
 package sbingo.likecloudmusic.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,8 +111,8 @@ public class OutPlayerController extends FrameLayout {
         Glide.with(mContext).load(isPlaying ? R.drawable.pause : R.drawable.play).placeholder(R.drawable.pic_loading_45).into(play);
     }
 
-    public void setThumb(String url) {
-        Glide.with(mContext).load(url).placeholder(R.drawable.pic_loading_45).error(R.drawable.pic_error_45).into(thumb);
+    public void setThumb(byte[] data) {
+        Glide.with(mContext).load(data).placeholder(R.drawable.pic_loading_45).error(R.drawable.pic_error_45).into(thumb);
     }
 
     public void setSongName(String s) {

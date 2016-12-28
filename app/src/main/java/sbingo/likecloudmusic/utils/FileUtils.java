@@ -1,6 +1,8 @@
 package sbingo.likecloudmusic.utils;
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
 
@@ -66,6 +68,22 @@ public class FileUtils {
         }
         cursor.close();
         return songs;
+    }
+
+    public static Bitmap parseThumbToBitmap(Song song) {
+        MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+        metadataRetriever.setDataSource(new File(song.getPath()).getAbsolutePath());
+        byte[] thumbData = metadataRetriever.getEmbeddedPicture();
+        if (thumbData != null) {
+            return BitmapFactory.decodeByteArray(thumbData, 0, thumbData.length);
+        }
+        return null;
+    }
+
+    public static byte[] parseThumbToByte(Song song) {
+        MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+        metadataRetriever.setDataSource(new File(song.getPath()).getAbsolutePath());
+        return metadataRetriever.getEmbeddedPicture();
     }
 
     public static boolean isFileExists(String path) {

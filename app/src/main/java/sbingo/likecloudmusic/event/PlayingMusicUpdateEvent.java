@@ -10,6 +10,7 @@ import sbingo.likecloudmusic.bean.Song;
 public class PlayingMusicUpdateEvent {
 
     private Song song;
+    private int index;
 
     public Song getSong() {
         return song;
@@ -19,7 +20,16 @@ public class PlayingMusicUpdateEvent {
         this.song = song;
     }
 
-    public PlayingMusicUpdateEvent(Song song) {
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public PlayingMusicUpdateEvent(Song song, int index) {
         this.song = song;
+        this.index = index;
     }
 }

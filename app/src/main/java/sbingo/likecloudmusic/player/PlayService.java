@@ -288,7 +288,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                 next = mPlayList.next();
                 play();
             }
-            RxBus.getInstance().post(new PlayingMusicUpdateEvent(next));
+            RxBus.getInstance().post(new PlayingMusicUpdateEvent(next, mPlayList.getPlayingIndex()));
         }
     }
 

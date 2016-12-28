@@ -3,6 +3,8 @@ package sbingo.likecloudmusic.ui.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -38,6 +40,7 @@ import sbingo.likecloudmusic.event.StartPlayingEvent;
 import sbingo.likecloudmusic.player.PlayService;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.LocalPagerAdapter;
 import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
+import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
@@ -356,5 +359,6 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     private void setControllerInfo(Song song) {
         playerController.setSongName(song.getTitle());
         playerController.setSinger(song.getArtist());
+        playerController.setThumb(FileUtils.parseThumbToByte(song));
     }
 }

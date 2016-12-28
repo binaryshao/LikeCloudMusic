@@ -17,10 +17,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.db.LitePalHelper;
+import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
+import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 
@@ -52,6 +55,16 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
         this.currentType = currentType;
         this.listener = listener;
         this.mContext = mContext;
+
+        RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+                .subscribe(new Action1<PlayingMusicUpdateEvent>() {
+                    @Override
+                    public void call(PlayingMusicUpdateEvent event) {
+                        mList.get(currentPlayingIndex).setPlaying(false);
+                        mList.get(event.getIndex()).setPlaying(true);
+                        currentPlayingIndex = event.getIndex();
+                    }
+                });
     }
 
     @Override
@@ -114,7 +127,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
                 break;
             default:
         }
-        Glide.with(mContext).load(song.getAlbum()).placeholder(R.drawable.pic_loading_45).error(R.drawable.pic_error_45).into(h.thumb);
+        Glide.with(mContext).load(FileUtils.parseThumbToByte(song)).placeholder(R.drawable.pic_loading_45).error(R.drawable.pic_error_45).into(h.thumb);
         h.title.setText(song.getTitle());
     }
 

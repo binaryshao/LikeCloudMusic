@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
@@ -55,6 +57,7 @@ import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.event.StartPlayingEvent;
 import sbingo.likecloudmusic.player.PlayService;
 import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
+import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
@@ -179,28 +182,28 @@ public class MainActivity extends BaseActivity
                         PreferenceUtils.putBoolean(MainActivity.this, Constants.HAS_PLAYLIST, true);
                     }
                 });
-        Subscription deletedSubscription =RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
+        Subscription deletedSubscription = RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
                 .subscribe(new Action1<PlaylistDeletedEvent>() {
                     @Override
                     public void call(PlaylistDeletedEvent event) {
                         playerController.setVisibility(View.GONE);
                     }
                 });
-        Subscription updateSubscription =RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+        Subscription updateSubscription = RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
                         setControllerInfo(event.getSong());
                     }
                 });
-        Subscription startSubscription =RxBus.getInstance().toObservable(StartPlayingEvent.class)
+        Subscription startSubscription = RxBus.getInstance().toObservable(StartPlayingEvent.class)
                 .subscribe(new Action1<StartPlayingEvent>() {
                     @Override
                     public void call(StartPlayingEvent event) {
                         mHandler.post(progressCallback);
                     }
                 });
-        Subscription pauseSubscription =RxBus.getInstance().toObservable(PausePlayingEvent.class)
+        Subscription pauseSubscription = RxBus.getInstance().toObservable(PausePlayingEvent.class)
                 .subscribe(new Action1<PausePlayingEvent>() {
                     @Override
                     public void call(PausePlayingEvent event) {
@@ -438,6 +441,7 @@ public class MainActivity extends BaseActivity
     private void setControllerInfo(Song song) {
         playerController.setSongName(song.getTitle());
         playerController.setSinger(song.getArtist());
+        playerController.setThumb(FileUtils.parseThumbToByte(song));
     }
 
     @Override
