@@ -62,7 +62,9 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     private ExecutorService executorService;
 
     //仅测试用，不真正存储
-    private boolean isFavorite;
+    private boolean isFavorite = true;
+    //仅测试用
+    private boolean isShowLyric;
 
 
     public class PlayerBinder extends Binder {
@@ -110,9 +112,11 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         } else if (ACTION_SIOP_SERVICE.equals(action)) {
             stopService();
         } else if (ACTION_FAVORITE.equals(action)) {
-
+            isFavorite = isFavorite ? false : true;
+            showNotification();
         } else if (ACTION_LYRIC.equals(action)) {
-
+            isShowLyric = isShowLyric ? false : true;
+            showNotification();
         }
         return START_STICKY;
     }
@@ -147,6 +151,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         @Override
         public void run() {
             if (canResumePlay()) {
+                RxBus.getInstance().post(new StartPlayingEvent());
+                showNotification();
                 return;
             }
             if (mPlayList.prepare()) {
@@ -159,8 +165,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                     mPlayer.setDataSource(song.getPath());
                     mPlayer.prepare();
                     mPlayer.start();
-                    showNotification();
                     RxBus.getInstance().post(new StartPlayingEvent());
+                    showNotification();
                 } catch (FileNotFoundException e) {
                     noFileWhilePlay(song);
                 } catch (IOException e) {
@@ -208,6 +214,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
             mPlayer.pause();
             isPaused = true;
             RxBus.getInstance().post(new PausePlayingEvent());
+            showNotification();
         }
     }
 
@@ -324,21 +331,19 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                 .setWhen(System.currentTimeMillis())
                 .setPriority(PRIORITY_MAX)
                 .setContentIntent(pendingIntent)
-//                .setCustomBigContentView(getBigNotificationView())
+                .setCustomBigContentView(getBigNotificationView())
                 .setOngoing(true)
                 .build();
 
-        long[] v = {1000,1500,1000};
-        notification.vibrate = v;
         startForeground(NOTIFICATION_ID, notification);
     }
 
     RemoteViews getBigNotificationView() {
         if (mNotificationViewBig == null) {
             mNotificationViewBig = new RemoteViews(getPackageName(), R.layout.notification_view);
-//            initNotificationView(mNotificationViewBig);
+            initNotificationView(mNotificationViewBig);
         }
-//        updateNotificationView(mNotificationViewBig);
+        updateNotificationView(mNotificationViewBig);
         return mNotificationViewBig;
     }
 
@@ -353,7 +358,6 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     void updateNotificationView(RemoteViews remoteViews) {
         Song song = mPlayList.getCurrentSong();
-        isFavorite = true;
         Bitmap thumb = FileUtils.parseThumbToBitmap(song);
         if (thumb == null) {
             remoteViews.setImageViewResource(R.id.thumb, R.drawable.pic_error_150);
@@ -362,7 +366,9 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         }
         remoteViews.setTextViewText(R.id.song_name, song.getTitle());
         remoteViews.setTextViewText(R.id.info, getString(R.string.song_info, song.getArtist(), song.getAlbum()));
-        remoteViews.setImageViewResource(R.id.toggle, isPlaying() ? R.drawable.notification_play_64 : R.drawable.notification_pause_64);
+        remoteViews.setImageViewResource(R.id.favorite, isFavorite ? R.drawable.notification_love_checked_32 : R.drawable.notification_love_32);
+        remoteViews.setImageViewResource(R.id.toggle, isPlaying() ? R.drawable.notification_pause_48 : R.drawable.notification_play_48);
+        remoteViews.setImageViewResource(R.id.lyric, isShowLyric ? R.drawable.notification_lyric_checked_32 : R.drawable.notification_lyric_32);
     }
 
     private PendingIntent getPendingIntent(String action) {

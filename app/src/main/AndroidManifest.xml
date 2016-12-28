@@ -44,6 +44,8 @@
                 <action android:name="like_cloud_music.play_last"/>
                 <action android:name="like_cloud_music.play_toggle"/>
                 <action android:name="like_cloud_music.stop_service"/>
+                <action android:name="like_cloud_music.favorite"/>
+                <action android:name="like_cloud_music.lyric"/>
             </intent-filter>
         </service>
     </application>

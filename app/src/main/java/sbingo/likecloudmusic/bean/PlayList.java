@@ -262,24 +262,6 @@ public class Playlist extends DataSupport implements Parcelable {
         return null;
     }
 
-    public Song getNextSong() {
-        int newIndex = 0;
-        switch (playMode) {
-            case LOOP:
-            case LIST:
-            case SINGLE:
-                newIndex = playingIndex + 1;
-                if (newIndex >= songs.size()) {
-                    newIndex = 0;
-                }
-                break;
-            case SHUFFLE:
-                newIndex = randomPlayIndex();
-                break;
-        }
-        return songs.get(newIndex);
-    }
-
     public boolean hasLast() {
         return songs != null && songs.size() != 0;
     }

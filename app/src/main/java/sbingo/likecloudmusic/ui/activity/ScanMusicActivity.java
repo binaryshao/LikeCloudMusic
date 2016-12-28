@@ -24,6 +24,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
@@ -74,6 +75,9 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
      * 上次退出时保存的播放进度
      */
     private int lastProgress;
+
+    private String lastThumb = "";
+
 
     @Override
     protected int getLayoutId() {
@@ -167,9 +171,11 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                     }
                 });
         Subscription startSubscription = RxBus.getInstance().toObservable(StartPlayingEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<StartPlayingEvent>() {
                     @Override
                     public void call(StartPlayingEvent event) {
+                        setControllerInfo(mPlayService.getPlayList().getCurrentSong());
                         mHandler.post(progressCallback);
                     }
                 });
@@ -177,6 +183,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                 .subscribe(new Action1<PausePlayingEvent>() {
                     @Override
                     public void call(PausePlayingEvent event) {
+                        playerController.setPlaying(false);
                         mHandler.removeCallbacks(progressCallback);
                     }
                 });
@@ -222,6 +229,8 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
             } else if (mPlayService.isPlaying()) { //从主页面进入时可能已经在播放ing
                 playerController.setPlaying(true);
                 mHandler.post(progressCallback);
+            } else if (mPlayService.isPaused()) { //主页面播放后又暂停
+                playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
             } else {
                 lastProgress = PreferenceUtils.getInt(ScanMusicActivity.this, Constants.PLAYING_PROGRESS, 0);
                 playerController.setPlayProgress(lastProgress);
@@ -319,6 +328,9 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         }
         if (mPlayService.isPlaying()) {
             mPlayService.pause();
+        } else if (mPlayService.isPaused()) {
+            mPlayService.play();
+            lastProgress = 0;
         } else {
             if (lastProgress != 0) {
                 int songProgress = (int) (mPlayService.getPlayList().getCurrentSong().getDuration() * (float) lastProgress / (float) playerController.getProgressMax());
@@ -335,7 +347,6 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         if (mPlayService == null) {
             return;
         }
-        setControllerInfo(mPlayService.getPlayList().getNextSong());
         mPlayService.playNext();
     }
 
@@ -359,6 +370,9 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     private void setControllerInfo(Song song) {
         playerController.setSongName(song.getTitle());
         playerController.setSinger(song.getArtist());
-        playerController.setThumb(FileUtils.parseThumbToByte(song));
+        if (!lastThumb.equals(song.getPath())) {
+            playerController.setThumb(FileUtils.parseThumbToByte(song));
+            lastThumb = song.getPath();
+        }
     }
 }

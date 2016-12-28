@@ -1,12 +1,8 @@
 package sbingo.likecloudmusic.ui.activity;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -18,8 +14,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,8 +21,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -114,6 +106,7 @@ public class MainActivity extends BaseActivity
     private int lastProgress;
     private Intent serviceIntent;
     private boolean isBinded;
+    private String lastThumb = "";
 
     @Override
     public int getLayoutId() {
@@ -197,9 +190,11 @@ public class MainActivity extends BaseActivity
                     }
                 });
         Subscription startSubscription = RxBus.getInstance().toObservable(StartPlayingEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<StartPlayingEvent>() {
                     @Override
                     public void call(StartPlayingEvent event) {
+                        setControllerInfo(mPlayService.getPlayList().getCurrentSong());
                         mHandler.post(progressCallback);
                     }
                 });
@@ -207,6 +202,7 @@ public class MainActivity extends BaseActivity
                 .subscribe(new Action1<PausePlayingEvent>() {
                     @Override
                     public void call(PausePlayingEvent event) {
+                        playerController.setPlaying(false);
                         mHandler.removeCallbacks(progressCallback);
                     }
                 });
@@ -400,6 +396,9 @@ public class MainActivity extends BaseActivity
             }
             if (mPlayService.isPlaying()) {
                 mPlayService.pause();
+            } else if (mPlayService.isPaused()) {
+                mPlayService.play();
+                lastProgress = 0;
             } else {
                 if (lastProgress != 0) {
                     int songProgress = (int) (mPlayService.getPlayList().getCurrentSong().getDuration() * (float) lastProgress / (float) playerController.getProgressMax());
@@ -416,7 +415,6 @@ public class MainActivity extends BaseActivity
             if (mPlayService == null) {
                 return;
             }
-            setControllerInfo(mPlayService.getPlayList().getNextSong());
             mPlayService.playNext();
         }
 
@@ -441,7 +439,10 @@ public class MainActivity extends BaseActivity
     private void setControllerInfo(Song song) {
         playerController.setSongName(song.getTitle());
         playerController.setSinger(song.getArtist());
-        playerController.setThumb(FileUtils.parseThumbToByte(song));
+        if (!lastThumb.equals(song.getPath())) {
+            playerController.setThumb(FileUtils.parseThumbToByte(song));
+            lastThumb = song.getPath();
+        }
     }
 
     @Override
