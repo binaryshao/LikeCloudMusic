@@ -12,5 +12,4 @@
     <color name="primary_heavy_text">@color/white</color>
     <color name="transparent">#00000000</color>
     <color name="divider_color">@color/alpha_50_white</color>
-    <color name="night_mask">@color/alpha_50_black</color>
 </resources>

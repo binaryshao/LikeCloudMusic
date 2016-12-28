@@ -12,7 +12,6 @@
     <color name="primary_heavy_text">@color/black</color>
     <color name="transparent">#00000000</color>
     <color name="divider_color">@color/alpha_25_black</color>
-    <color name="night_mask">@color/transparent</color>
 
     <color name="alpha_05_white">#0DFFFFFF</color>
     <color name="alpha_10_white">#1AFFFFFF</color>

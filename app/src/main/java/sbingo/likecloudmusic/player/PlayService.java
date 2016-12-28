@@ -1,11 +1,16 @@
 package sbingo.likecloudmusic.player;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import com.orhanobut.logger.Logger;
 
@@ -17,6 +22,7 @@ import java.util.concurrent.Executors;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.Playlist;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
@@ -26,9 +32,12 @@ import sbingo.likecloudmusic.event.PausePlayingEvent;
 import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
 import sbingo.likecloudmusic.event.RxBus;
 import sbingo.likecloudmusic.event.StartPlayingEvent;
+import sbingo.likecloudmusic.ui.activity.MainActivity;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
+
+import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
 
 public class PlayService extends Service implements MediaPlayer.OnCompletionListener {
 
@@ -38,6 +47,11 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     private static final String ACTION_PLAY_LAST = "like_cloud_music.play_last";
     private static final String ACTION_PLAY_TOGGLE = "like_cloud_music.play_toggle";
     private static final String ACTION_SIOP_SERVICE = "like_cloud_music.stop_service";
+    private static final String ACTION_FAVORITE = "like_cloud_music.favorite";
+    private static final String ACTION_LYRIC = "like_cloud_music.lyric";
+
+    private static final int NOTIFICATION_ID = 100;
+    private RemoteViews mNotificationViewBig, mNotificationViewSmall;
 
     private MediaPlayer mPlayer;
     private PlayerBinder mBinder;
@@ -46,6 +60,9 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     private boolean isPaused;
 
     private ExecutorService executorService;
+
+    //仅测试用，不真正存储
+    private boolean isFavorite;
 
 
     public class PlayerBinder extends Binder {
@@ -92,6 +109,10 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
             playLast();
         } else if (ACTION_SIOP_SERVICE.equals(action)) {
             stopService();
+        } else if (ACTION_FAVORITE.equals(action)) {
+
+        } else if (ACTION_LYRIC.equals(action)) {
+
         }
         return START_STICKY;
     }
@@ -138,6 +159,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                     mPlayer.setDataSource(song.getPath());
                     mPlayer.prepare();
                     mPlayer.start();
+                    showNotification();
                     RxBus.getInstance().post(new StartPlayingEvent());
                 } catch (FileNotFoundException e) {
                     noFileWhilePlay(song);
@@ -270,6 +292,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                 RxBus.getInstance().post(new StartPlayingEvent());
             }
         }
+        showNotification();
     }
 
     public void setPlayMode(PlayMode playMode) {
@@ -294,5 +317,56 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     private void showNotification() {
 
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.avatar)
+                .setWhen(System.currentTimeMillis())
+                .setPriority(PRIORITY_MAX)
+                .setContentIntent(pendingIntent)
+//                .setCustomBigContentView(getBigNotificationView())
+                .setOngoing(true)
+                .build();
+
+        long[] v = {1000,1500,1000};
+        notification.vibrate = v;
+        startForeground(NOTIFICATION_ID, notification);
     }
+
+    RemoteViews getBigNotificationView() {
+        if (mNotificationViewBig == null) {
+            mNotificationViewBig = new RemoteViews(getPackageName(), R.layout.notification_view);
+//            initNotificationView(mNotificationViewBig);
+        }
+//        updateNotificationView(mNotificationViewBig);
+        return mNotificationViewBig;
+    }
+
+    void initNotificationView(RemoteViews remoteViews) {
+        remoteViews.setOnClickPendingIntent(R.id.close, getPendingIntent(ACTION_SIOP_SERVICE));
+        remoteViews.setOnClickPendingIntent(R.id.last, getPendingIntent(ACTION_PLAY_LAST));
+        remoteViews.setOnClickPendingIntent(R.id.toggle, getPendingIntent(ACTION_PLAY_TOGGLE));
+        remoteViews.setOnClickPendingIntent(R.id.next, getPendingIntent(ACTION_PLAY_NEXT));
+        remoteViews.setOnClickPendingIntent(R.id.favorite, getPendingIntent(ACTION_FAVORITE));
+        remoteViews.setOnClickPendingIntent(R.id.lyric, getPendingIntent(ACTION_LYRIC));
+    }
+
+    void updateNotificationView(RemoteViews remoteViews) {
+        Song song = mPlayList.getCurrentSong();
+        isFavorite = true;
+        Bitmap thumb = FileUtils.parseThumbToBitmap(song);
+        if (thumb == null) {
+            remoteViews.setImageViewResource(R.id.thumb, R.drawable.pic_error_150);
+        } else {
+            remoteViews.setImageViewBitmap(R.id.thumb, thumb);
+        }
+        remoteViews.setTextViewText(R.id.song_name, song.getTitle());
+        remoteViews.setTextViewText(R.id.info, getString(R.string.song_info, song.getArtist(), song.getAlbum()));
+        remoteViews.setImageViewResource(R.id.toggle, isPlaying() ? R.drawable.notification_play_64 : R.drawable.notification_pause_64);
+    }
+
+    private PendingIntent getPendingIntent(String action) {
+        return PendingIntent.getService(this, 0, new Intent(action), 0);
+    }
+
 }
