@@ -60,6 +60,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     }
 
     public void loadMusicFromDB() {
+        mView.showLoading();
         mInteractor.loadSongFromDB();
     }
 
