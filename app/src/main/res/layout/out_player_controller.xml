@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/controller"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/heavy_background"
-    android:orientation="vertical">
+<LinearLayout android:id="@+id/controller"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/heavy_background"
+              android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
             android:layout_height="@dimen/dp_45"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
-            tools:src="@drawable/avatar" />
+            tools:src="@drawable/avatar"/>
 
         <ImageView
             android:id="@+id/next"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/next" />
+            android:src="@drawable/next"/>
 
         <ImageView
             android:id="@+id/play"
@@ -36,7 +36,7 @@
             android:layout_height="@dimen/dp_32"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/next"
-            android:src="@drawable/play" />
+            android:src="@drawable/play"/>
 
         <ImageView
             android:id="@+id/play_list"
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/play"
-            android:src="@drawable/list" />
+            android:src="@drawable/list"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -60,26 +60,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/primary_heavy_text"
-                android:textSize="@dimen/sp_16"
-                tools:text="红玫瑰" />
+                android:textSize="@dimen/sp_14"
+                tools:text="红玫瑰"/>
 
             <TextView
                 android:id="@+id/singer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_5"
                 android:textColor="@color/primary_light_text"
-                android:textSize="@dimen/sp_14"
-                tools:text="陈奕迅" />
+                android:textSize="@dimen/sp_12"
+                tools:text="陈奕迅"/>
         </LinearLayout>
 
     </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/play_progress"
-        style="@style/progressStyle"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="2dp"
         android:max="100"
-        tools:progress="10" />
+        android:progressDrawable="@drawable/progress_bar"
+        tools:progress="10"/>
 </LinearLayout>

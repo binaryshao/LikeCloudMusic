@@ -5,8 +5,8 @@
     <color name="colorAccent">#CE3D3E</color>
 
     <color name="item_background">#F2F4F5</color>
-    <color name="heavy_background">#E6E8E9</color>
-    <color name="whole_background">#FEFEFE</color>
+    <color name="heavy_background">#FEFEFE</color>
+    <color name="whole_background">#E6E8E9</color>
     <color name="primary_light_text">#999999</color>
     <color name="primary_middle_text">#707070</color>
     <color name="primary_heavy_text">@color/black</color>

@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/whole_background"
+    tools:context=".ui.activity.ScanMusicActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -33,7 +35,7 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="110dp"
+        android:paddingBottom="110dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <sbingo.likecloudmusic.widget.OutPlayerController
@@ -43,6 +45,5 @@
         android:layout_gravity="bottom"
         android:visibility="gone"
         tools:visibility="visible"/>
-
 
 </android.support.design.widget.CoordinatorLayout>
