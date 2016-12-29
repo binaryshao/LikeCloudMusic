@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@color/transparent"
-    tools:background="@color/black">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="114dp"
+                android:background="@color/transparent"
+                tools:background="@color/black">
 
     <ImageView
         android:id="@+id/close"
@@ -13,14 +13,14 @@
         android:layout_alignParentRight="true"
         android:paddingRight="10dp"
         android:paddingTop="10dp"
-        android:src="@drawable/close_48" />
+        android:src="@drawable/close_48"/>
 
     <ImageView
         android:id="@+id/thumb"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="114dp"
+        android:layout_height="114dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/pic_loading_150" />
+        android:src="@drawable/pic_loading_150"/>
 
     <TextView
         android:id="@+id/song_name"
@@ -34,7 +34,7 @@
         android:lines="1"
         android:textColor="@color/white"
         android:textSize="14sp"
-        tools:text="减肥的空间里的顾忌估计的发个梵蒂复健科的根据地方官匪勾" />
+        tools:text="减肥的空间里的顾忌估计的发个梵蒂复健科的根据地方官匪勾"/>
 
     <TextView
         android:id="@+id/info"
@@ -44,18 +44,20 @@
         android:layout_below="@id/song_name"
         android:layout_marginTop="5dp"
         android:layout_toLeftOf="@id/close"
+        android:ellipsize="end"
+        android:lines="1"
         android:textColor="@color/alpha_60_white"
         android:textSize="12sp"
-        tools:text="2016跨世界粤语精选" />
+        tools:text="2016跨世界粤语精选"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/song_name"
         android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/thumb"
         android:gravity="center_vertical"
-        android:paddingBottom="5dp"
+        android:paddingBottom="10dp"
         android:paddingTop="5dp">
 
         <ImageView
@@ -63,34 +65,34 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/notification_love_checked_32" />
+            android:src="@drawable/notification_love_checked_32"/>
 
         <ImageView
             android:id="@+id/last"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/notification_last_32" />
+            android:src="@drawable/notification_last_32"/>
 
         <ImageView
             android:id="@+id/toggle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/notification_play_48" />
+            android:src="@drawable/notification_play_64"/>
 
         <ImageView
             android:id="@+id/next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/notification_next_32" />
+            android:src="@drawable/notification_next_32"/>
 
         <ImageView
             android:id="@+id/lyric"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/notification_lyric_32" />
+            android:src="@drawable/notification_lyric_32"/>
     </LinearLayout>
 </RelativeLayout>

@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity
         if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST) && mPlayService == null) {
             playerController.setVisibility(View.VISIBLE);
             getPlaylistAndBind();
-        } else if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST) && mPlayService != null) {
+        } else if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST) && mPlayService != null) { //切换日夜间模式
             playerController.setVisibility(View.VISIBLE);
             playerController.setPlaying(true);
             mHandler.post(progressCallback);
@@ -247,7 +247,6 @@ public class MainActivity extends BaseActivity
             if (playOnceBind) {
                 playOnceBind = false;
                 mPlayService.play(playlist, index);
-                playerController.setPlaying(true);
             } else if (playlist != null) { //加载出本地歌单时
                 Logger.d("读取播放歌曲序号：" + PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_INDEX));
                 Logger.d("读取播放歌曲进度：" + PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_PROGRESS));
@@ -368,11 +367,6 @@ public class MainActivity extends BaseActivity
         if (mPlayService == null) {
             return;
         }
-        if (mPlayService.isPlaying()) {
-            playerController.setPlaying(true);
-        } else {
-            playerController.setPlaying(false);
-        }
         setControllerInfo(mPlayService.getPlayList().getCurrentSong());
     }
 
@@ -439,6 +433,7 @@ public class MainActivity extends BaseActivity
     private void setControllerInfo(Song song) {
         playerController.setSongName(song.getTitle());
         playerController.setSinger(song.getArtist());
+        playerController.setPlaying(mPlayService.isPlaying());
         if (!lastThumb.equals(song.getPath())) {
             playerController.setThumb(FileUtils.parseThumbToByte(song));
             lastThumb = song.getPath();

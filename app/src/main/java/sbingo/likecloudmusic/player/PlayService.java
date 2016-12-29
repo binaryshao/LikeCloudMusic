@@ -35,9 +35,9 @@ import sbingo.likecloudmusic.event.StartPlayingEvent;
 import sbingo.likecloudmusic.ui.activity.MainActivity;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
-import sbingo.likecloudmusic.utils.RemindUtils;
 
-import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
 
 public class PlayService extends Service implements MediaPlayer.OnCompletionListener {
 
@@ -177,7 +177,6 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     };
 
     private void noFileWhilePlay(final Song song) {
-        RemindUtils.showToast("跳过一首不存在的歌曲");
         LitePalHelper.deleteSong(song)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -327,11 +326,12 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.avatar)
+                .setSmallIcon(R.mipmap.logo)
                 .setWhen(System.currentTimeMillis())
-                .setPriority(PRIORITY_MAX)
+                .setPriority(PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setCustomBigContentView(getBigNotificationView())
+                .setCustomContentView(getSmallNotificationView())
                 .setOngoing(true)
                 .build();
 
@@ -345,6 +345,15 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         }
         updateNotificationView(mNotificationViewBig);
         return mNotificationViewBig;
+    }
+
+    RemoteViews getSmallNotificationView() {
+        if (mNotificationViewSmall == null) {
+            mNotificationViewSmall = new RemoteViews(getPackageName(), R.layout.notification_view_small);
+            initNotificationView(mNotificationViewSmall);
+        }
+        updateNotificationView(mNotificationViewSmall);
+        return mNotificationViewSmall;
     }
 
     void initNotificationView(RemoteViews remoteViews) {
@@ -367,7 +376,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         remoteViews.setTextViewText(R.id.song_name, song.getTitle());
         remoteViews.setTextViewText(R.id.info, getString(R.string.song_info, song.getArtist(), song.getAlbum()));
         remoteViews.setImageViewResource(R.id.favorite, isFavorite ? R.drawable.notification_love_checked_32 : R.drawable.notification_love_32);
-        remoteViews.setImageViewResource(R.id.toggle, isPlaying() ? R.drawable.notification_pause_48 : R.drawable.notification_play_48);
+        remoteViews.setImageViewResource(R.id.toggle, isPlaying() ? R.drawable.notification_pause_64 : R.drawable.notification_play_64);
         remoteViews.setImageViewResource(R.id.lyric, isShowLyric ? R.drawable.notification_lyric_checked_32 : R.drawable.notification_lyric_32);
     }
 

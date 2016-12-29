@@ -149,7 +149,6 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                                 playerController.setPlayProgress(0);
                             }
                             mPlayService.play(playlist, index);
-                            playerController.setPlaying(true);
                             setControllerInfo(playlist.getCurrentSong());
                             playlist = null;
                         }
@@ -225,9 +224,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
             mPlayService = ((PlayService.PlayerBinder) service).getPlayService();
             if (playOnceBind) { //点击歌曲列表时
                 mPlayService.play(playlist, index);
-                playerController.setPlaying(true);
             } else if (mPlayService.isPlaying()) { //从主页面进入时可能已经在播放ing
-                playerController.setPlaying(true);
                 mHandler.post(progressCallback);
             } else if (mPlayService.isPaused()) { //主页面播放后又暂停
                 playerController.setPlayProgress((int) (playerController.getProgressMax() * mPlayService.getProgressPercent()));
@@ -370,6 +367,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     private void setControllerInfo(Song song) {
         playerController.setSongName(song.getTitle());
         playerController.setSinger(song.getArtist());
+        playerController.setPlaying(mPlayService.isPlaying());
         if (!lastThumb.equals(song.getPath())) {
             playerController.setThumb(FileUtils.parseThumbToByte(song));
             lastThumb = song.getPath();
