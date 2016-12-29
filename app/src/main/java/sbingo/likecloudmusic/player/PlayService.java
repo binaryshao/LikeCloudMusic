@@ -36,7 +36,6 @@ import sbingo.likecloudmusic.ui.activity.MainActivity;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 
-import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
 
 public class PlayService extends Service implements MediaPlayer.OnCompletionListener {
@@ -326,12 +325,13 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.logo)
+                .setSmallIcon(R.drawable.white_logo_50)
                 .setWhen(System.currentTimeMillis())
                 .setPriority(PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setCustomBigContentView(getBigNotificationView())
                 .setCustomContentView(getSmallNotificationView())
+                .setTicker("云音正在播放")
                 .setOngoing(true)
                 .build();
 
