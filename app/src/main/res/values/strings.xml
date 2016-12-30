@@ -11,7 +11,7 @@
     <string name="info_test">2016跨世界粤语精选</string>
 
     <!--加载页-->
-    <string name="loading">是结束\n亦或新的开始\n……</string>
+    <string name="loading">云上的声音\n用心倾听\n……</string>
     <!--导航目录-->
     <string name="message">我的消息</string>
     <string name="member_center">会员中心</string>
@@ -67,5 +67,8 @@
     <!--无本地音乐-->
     <string name="empty_disk">暂无本地音乐</string>
     <string name="scan_disk">一键扫描</string>
+
+    <!--权限-->
+    <string name="permission_denied">【%1$s】权限被拒绝,%2$s</string>
 
 </resources>

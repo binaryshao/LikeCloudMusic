@@ -133,7 +133,7 @@ public class LitePalHelper {
             @Override
             public void call(Subscriber<? super Playlist> subscriber) {
                 Playlist playlist = DataSupport.findLast(Playlist.class, true);
-                if (playlist == null) {
+                if (playlist == null || playlist.getNumOfSongs() == 0) {
                     subscriber.onError(new Throwable("歌单库为空"));
                 } else {
                     subscriber.onNext(playlist);

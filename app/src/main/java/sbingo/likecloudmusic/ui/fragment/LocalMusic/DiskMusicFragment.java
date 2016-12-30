@@ -1,5 +1,6 @@
 package sbingo.likecloudmusic.ui.fragment.LocalMusic;
 
+import android.Manifest;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -87,7 +88,18 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     }
 
     public void scanDiskMusic() {
-        mPresenter.loadMusicFromDisk();
+        checkPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, new PermissionListener() {
+            @Override
+            public void onGranted() {
+                mPresenter.loadMusicFromDisk();
+            }
+
+            @Override
+            public void onDenied(List<String> permissions) {
+                RemindUtils.showToast(getString(R.string.permission_denied, "读取存储", "加载音乐失败"));
+                showEmptyView();
+            }
+        });
     }
 
     @Override

@@ -247,15 +247,16 @@ public class MainActivity extends BaseActivity
             if (playOnceBind) {
                 playOnceBind = false;
                 mPlayService.play(playlist, index);
-            } else if (playlist != null) { //加载出本地歌单时
+                setControllerInfo(mPlayService.getPlayList().getCurrentSong());
+            } else if (playlist != null && playlist.getNumOfSongs() > 0) { //加载出本地歌单时
                 Logger.d("读取播放歌曲序号：" + PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_INDEX));
                 Logger.d("读取播放歌曲进度：" + PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_PROGRESS));
                 mPlayService.setPlaylist(playlist, PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_INDEX, 0));
                 mPlayService.getPlayList().prepare();
                 lastProgress = PreferenceUtils.getInt(MainActivity.this, Constants.PLAYING_PROGRESS, 0);
                 playerController.setPlayProgress(lastProgress);
+                setControllerInfo(mPlayService.getPlayList().getCurrentSong());
             }
-            setControllerInfo(mPlayService.getPlayList().getCurrentSong());
             playlist = null;
         }
 

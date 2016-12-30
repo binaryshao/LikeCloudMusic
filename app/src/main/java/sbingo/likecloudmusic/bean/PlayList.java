@@ -258,6 +258,9 @@ public class Playlist extends DataSupport implements Parcelable {
     public Song getCurrentSong() {
         if (playingIndex != NO_POSITION) {
             return songs.get(playingIndex);
+        } else if (playingIndex>getNumOfSongs()-1) {
+            playingIndex = 0;
+            return songs.get(playingIndex);
         }
         return null;
     }
