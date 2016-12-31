@@ -1,5 +1,14 @@
 ###**LikeCloudMusic 云音**
 仿网易云音乐v3.7.5，Material Design风格，基于MVP
+
+LikeCloudMusic中的Like有两层意思
+
+1.喜欢，正因为喜欢网易云音乐这款APP，才有了该项目。
+
+2.像、类似，表明该项目是对云音乐的仿造。
+
+本项目仅用于技术学习交流，不得用于其他用途。
+
 ###**效果图**
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/gif/LikeCloudMusic.gif)
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/Screenshot/2.png)
@@ -41,7 +50,6 @@
 server端
 
 ……
-
 ###**用到的开源库**
 
 Butterknife
