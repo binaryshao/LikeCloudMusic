@@ -24,6 +24,7 @@ import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
 import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.ui.fragment.LocalMusic.DiskMusicFragment;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 
@@ -99,9 +100,12 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
                     } else {
                         Logger.d(TAG + "playList");
                         if (!FileUtils.isFileExists(song.getPath())) {
-                            RemindUtils.showToast("该文件不存在");
+                            RemindUtils.showToast(mContext.getString(R.string.file_not_exist, song.getTitle()));
                             LitePalHelper.deleteSong(song);
                             deleteItem(position);
+                            if (getItemCount() == 0) {
+                                ((DiskMusicFragment)listener).showEmptyView();
+                            }
                             return;
                         }
                         song.setPlaying(true);

@@ -135,6 +135,11 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     }
 
     @Override
+    public void hideEmptyView() {
+        emptyView.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onPlaylistCreated(Playlist playlist, int index) {
         RxBus.getInstance().post(new PlaylistCreatedEvent(playlist, index));
     }
@@ -146,6 +151,7 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
 
     @OnClick(R.id.scan_disk)
     public void onClick() {
+        hideEmptyView();
         scanDiskMusic();
     }
 

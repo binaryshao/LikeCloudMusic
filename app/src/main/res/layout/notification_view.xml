@@ -3,8 +3,8 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="114dp"
-                android:background="@color/transparent"
-                tools:background="@color/black">
+                android:background="#263238"
+                tools:background="#263238">
 
     <ImageView
         android:id="@+id/close"

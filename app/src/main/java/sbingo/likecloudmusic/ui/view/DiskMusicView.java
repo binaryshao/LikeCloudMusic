@@ -18,6 +18,8 @@ public interface DiskMusicView extends BaseView {
 
     void showEmptyView();
 
+    void hideEmptyView();
+
     LoaderManager getLoaderManager();
 
     void onPlaylistCreated(Playlist playlist, int index);

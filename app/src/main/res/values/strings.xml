@@ -67,6 +67,7 @@
     <!--无本地音乐-->
     <string name="empty_disk">暂无本地音乐</string>
     <string name="scan_disk">一键扫描</string>
+    <string name="file_not_exist">歌曲文件【%1$s】不存在</string>
 
     <!--权限-->
     <string name="permission_denied">【%1$s】权限被拒绝,%2$s</string>
