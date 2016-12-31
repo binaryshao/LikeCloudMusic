@@ -1,5 +1,5 @@
 ###**LikeCloudMusic 云音**
-仿网易云音乐v3.7.5，Material Design风格，基于MVP
+仿网易云音乐v3.7.5，Material Design风格，基于MVP，使用RxBus作为事件总线通信库
 
 LikeCloudMusic中的Like有两层意思
 
@@ -22,6 +22,8 @@ LikeCloudMusic中的Like有两层意思
 
 扫描本地歌曲
 
+存储歌曲及歌单
+
 后台播放歌曲
 
 底部播放控制器（暂停、开始、切歌、当前播放进度等）
@@ -29,6 +31,8 @@ LikeCloudMusic中的Like有两层意思
 两个界面的控制器状态同步
 
 通知栏播放控制
+
+记忆播放歌曲及进度
 
 夜间模式
 
@@ -50,7 +54,7 @@ LikeCloudMusic中的Like有两层意思
 server端
 
 ……
-###**用到的开源库**
+###**主要用到的开源库**
 
 Butterknife
 
