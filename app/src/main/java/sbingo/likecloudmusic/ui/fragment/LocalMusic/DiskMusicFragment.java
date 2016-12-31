@@ -120,6 +120,13 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     @Override
     public void onMusicLoaded(List<Song> songs) {
         mAdapter.setList(songs);
+        //似乎加载太快导致看不到进度条，手动延长进度条时间……
+        progressBar.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideLoading();
+            }
+        }, 2000);
     }
 
     @Override

@@ -91,9 +91,9 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     }
 
     public void onSongNext(List<Song> songs) {
-        mView.hideLoading();
         if (songs.isEmpty()) {
             mView.showEmptyView();
+            mView.hideLoading();
         } else {
             mView.onMusicLoaded(songs);
         }

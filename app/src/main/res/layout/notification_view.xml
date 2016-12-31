@@ -47,7 +47,7 @@
         android:ellipsize="end"
         android:lines="1"
         android:textColor="@color/alpha_60_white"
-        android:textSize="12sp"
+        android:textSize="11sp"
         tools:text="2016跨世界粤语精选"/>
 
     <LinearLayout
