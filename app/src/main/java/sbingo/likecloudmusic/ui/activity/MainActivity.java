@@ -1,6 +1,7 @@
 package sbingo.likecloudmusic.ui.activity;
 
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Handler;
@@ -8,12 +9,14 @@ import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,6 +24,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -52,6 +58,7 @@ import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
+import sbingo.likecloudmusic.utils.ScreenUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
 
 /**
@@ -107,6 +114,9 @@ public class MainActivity extends BaseActivity
     private Intent serviceIntent;
     private boolean isBinded;
     private String lastThumb = "";
+    private int timingStopIndex = 0;
+    private boolean isStopAfterEnd;
+    private String customTime = "假装自定义(5分钟后)";
 
     @Override
     public int getLayoutId() {
@@ -475,36 +485,70 @@ public class MainActivity extends BaseActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.message) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.member_center) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.shop) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.listen_online) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.identify_song) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.theme) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.night_mode) {
             nightSwitch.setChecked(nightSwitch.isChecked() ? false : true);
-            return true;
         } else if (id == R.id.timing_stop) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
+            timingStop();
         } else if (id == R.id.scan) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.music_box) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.music_clock) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.driving_mode) {
-
+            drawerLayout.closeDrawer(GravityCompat.START);
         }
 
-        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * 【定时停止播放】弹窗
+     */
+    private void timingStop() {
+        TextView tv = new TextView(this);
+        tv.setText(R.string.timing_stop);
+        tv.setPadding(60, 20, 0, 0);
+        tv.setTextSize(16);
+        tv.setTextColor(ContextCompat.getColor(this, R.color.black));
+        CharSequence[] items = getResources().getStringArray(R.array.timing_stop);
+        items[items.length - 1] = customTime;
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.my_dialog)
+                .setCustomTitle(tv)
+                .setView(R.layout.timing_stop_bottom)
+                .setSingleChoiceItems(items, timingStopIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        timingStopIndex = which;
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.stop_after_end);
+        checkBox.setChecked(isStopAfterEnd ? true : false);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                isStopAfterEnd = isChecked;
+                if (isChecked) {
+                    RemindUtils.showToast(getString(R.string.stop_after_end));
+                }
+            }
+        });
     }
 
     @OnClick({R.id.setting, R.id.quit})

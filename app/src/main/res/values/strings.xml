@@ -72,4 +72,16 @@
     <!--权限-->
     <string name="permission_denied">【%1$s】权限被拒绝,%2$s</string>
 
+    <!--定时停止播放-->
+    <string-array name="timing_stop">
+        <item name="no_use">不开启</item>
+        <item name="mins_10">10分钟后</item>
+        <item name="mins_20">20分钟后</item>
+        <item name="mins_30">30分钟后</item>
+        <item name="mins_45">45分钟后</item>
+        <item name="mins_60">60分钟后</item>
+        <item name="custom">自定义</item>
+    </string-array>
+
+    <string name="stop_after_end">计时结束后播完当前歌曲再停止</string>
 </resources>

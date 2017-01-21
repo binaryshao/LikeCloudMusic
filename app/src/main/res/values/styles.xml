@@ -27,4 +27,8 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="my_dialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textSize">14sp</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

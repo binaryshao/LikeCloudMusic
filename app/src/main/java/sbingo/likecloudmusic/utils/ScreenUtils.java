@@ -19,23 +19,23 @@ public class ScreenUtils {
         return dm;
     }
 
-    public static int getScreenWidth() {
-        return getDisplayMetrics(MyApplication.getAppContext()).widthPixels;
+    public static int getScreenWidth(Context context) {
+        return getDisplayMetrics(context).widthPixels;
     }
 
-    public static int getScreenHeight() {
-        return getDisplayMetrics(MyApplication.getAppContext()).heightPixels;
+    public static int getScreenHeight(Context context) {
+        return getDisplayMetrics(context).heightPixels;
     }
 
-    public static float getDensity() {
-        return getDisplayMetrics(MyApplication.getAppContext()).density;
+    public static float getDensity(Context context) {
+        return getDisplayMetrics(context).density;
     }
 
-    public static int dp2px(float dp) {
-        return (int) (dp * getDensity() + 0.5f);
+    public static int dp2px(Context context,float dp) {
+        return (int) (dp * getDensity(context) + 0.5f);
     }
 
-    public static int px2dp(float px) {
-        return (int) (px / getDensity() + 0.5f);
+    public static int px2dp(Context context,float px) {
+        return (int) (px / getDensity(context) + 0.5f);
     }
 }
