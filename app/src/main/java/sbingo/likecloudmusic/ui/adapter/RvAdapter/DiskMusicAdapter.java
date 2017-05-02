@@ -12,14 +12,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.orhanobut.logger.Logger;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 import sbingo.likecloudmusic.R;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.db.LitePalHelper;
 import sbingo.likecloudmusic.event.PlayingMusicUpdateEvent;
@@ -49,7 +46,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
 
         void toPlayerActivity(Song song);
 
-        void playList(Playlist playlist, int index);
+        void playList(PlayList playlist, int index);
     }
 
     public DiskMusicAdapter(int currentType, DiskMusicListener listener, Context mContext) {
@@ -111,7 +108,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
                         song.setPlaying(true);
                         mList.get(currentPlayingIndex).setPlaying(false);
                         currentPlayingIndex = position;
-                        Playlist playlist = new Playlist();
+                        PlayList playlist = new PlayList();
                         playlist.setSongs(mList);
                         playlist.setCurrentPlaylist(true);
                         listener.playList(playlist, position);

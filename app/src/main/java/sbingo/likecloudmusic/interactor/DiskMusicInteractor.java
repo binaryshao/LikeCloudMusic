@@ -3,12 +3,8 @@ package sbingo.likecloudmusic.interactor;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
-import com.orhanobut.logger.Logger;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,10 +14,9 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.common.MyApplication;
@@ -131,11 +126,11 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
         mSubscriptions.add(subscription);
     }
 
-    public void createPlaylist(Playlist playlist, final int index) {
+    public void createPlaylist(PlayList playlist, final int index) {
         Subscription subscription = LitePalHelper.insertPlaylist(playlist)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Playlist>() {
+                .subscribe(new Observer<PlayList>() {
                     @Override
                     public void onCompleted() {
 
@@ -147,7 +142,7 @@ public class DiskMusicInteractor extends BaseInteractor<DiskMusicPresenter> {
                     }
 
                     @Override
-                    public void onNext(Playlist playlist) {
+                    public void onNext(PlayList playlist) {
                         mPresenter.onPlaylistNext(playlist, index);
                     }
                 });

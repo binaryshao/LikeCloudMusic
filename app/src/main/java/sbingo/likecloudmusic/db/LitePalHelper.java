@@ -1,8 +1,6 @@
 package sbingo.likecloudmusic.db;
 
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.style.SubscriptSpan;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
@@ -12,7 +10,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 
 /**
@@ -110,10 +108,10 @@ public class LitePalHelper {
 
     //Playlist
 
-    public static Observable<Playlist> insertPlaylist(final Playlist playlist) {
-        return Observable.create(new Observable.OnSubscribe<Playlist>() {
+    public static Observable<PlayList> insertPlaylist(final PlayList playlist) {
+        return Observable.create(new Observable.OnSubscribe<PlayList>() {
             @Override
-            public void call(Subscriber<? super Playlist> subscriber) {
+            public void call(Subscriber<? super PlayList> subscriber) {
                 Date now = new Date();
                 playlist.setCreatedAt(now);
                 playlist.setUpdatedAt(now);
@@ -128,11 +126,11 @@ public class LitePalHelper {
         });
     }
 
-    public static Observable<Playlist> queryCurrentPlaylist() {
-        return Observable.create(new Observable.OnSubscribe<Playlist>() {
+    public static Observable<PlayList> queryCurrentPlaylist() {
+        return Observable.create(new Observable.OnSubscribe<PlayList>() {
             @Override
-            public void call(Subscriber<? super Playlist> subscriber) {
-                Playlist playlist = DataSupport.findLast(Playlist.class, true);
+            public void call(Subscriber<? super PlayList> subscriber) {
+                PlayList playlist = DataSupport.findLast(PlayList.class, true);
                 if (playlist == null || playlist.getNumOfSongs() == 0) {
                     subscriber.onError(new Throwable("歌单库为空"));
                 } else {

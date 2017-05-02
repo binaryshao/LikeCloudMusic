@@ -3,8 +3,6 @@ package sbingo.likecloudmusic.ui.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,7 +26,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.event.DiskMusicChangeEvent;
@@ -66,7 +64,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
 
     private DiskMusicFragment[] diskMusicFragments = {new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment(), new DiskMusicFragment()};
     private PlayService mPlayService;
-    private Playlist playlist;
+    private PlayList playlist;
     private int index;
     private boolean playOnceBind;
     private static final long PROGRESS_UPDATE_INTERVAL = 1000;

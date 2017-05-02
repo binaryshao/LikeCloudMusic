@@ -1,6 +1,6 @@
 package sbingo.likecloudmusic.event;
 
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 
 /**
  * Author: Sbingo
@@ -9,14 +9,14 @@ import sbingo.likecloudmusic.bean.Playlist;
 
 public class PlaylistCreatedEvent {
 
-    private Playlist playlist;
+    private PlayList playlist;
     private int index;
 
-    public Playlist getPlaylist() {
+    public PlayList getPlaylist() {
         return playlist;
     }
 
-    public void setPlaylist(Playlist playlist) {
+    public void setPlaylist(PlayList playlist) {
         this.playlist = playlist;
     }
 
@@ -28,7 +28,7 @@ public class PlaylistCreatedEvent {
         this.index = index;
     }
 
-    public PlaylistCreatedEvent(Playlist playlist, int index) {
+    public PlaylistCreatedEvent(PlayList playlist, int index) {
         this.playlist = playlist;
         this.index = index;
     }

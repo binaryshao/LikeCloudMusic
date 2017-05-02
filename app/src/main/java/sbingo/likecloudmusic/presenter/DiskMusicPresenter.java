@@ -13,7 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.subscriptions.CompositeSubscription;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.event.DiskMusicChangeEvent;
@@ -86,7 +86,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
     public void onLoaderReset(Loader<Cursor> loader) {
     }
 
-    public void createPlaylist(Playlist playlist, int index) {
+    public void createPlaylist(PlayList playlist, int index) {
         mInteractor.createPlaylist(playlist, index);
     }
 
@@ -105,7 +105,7 @@ public class DiskMusicPresenter extends BasePresenter<DiskMusicView> implements 
         mView.showMsg(throwable.getMessage());
     }
 
-    public void onPlaylistNext(Playlist playlist, int index) {
+    public void onPlaylistNext(PlayList playlist, int index) {
         mView.onPlaylistCreated(playlist, index);
     }
 

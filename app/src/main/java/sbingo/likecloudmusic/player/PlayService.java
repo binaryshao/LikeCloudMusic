@@ -23,7 +23,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import sbingo.likecloudmusic.R;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.common.MyApplication;
@@ -54,7 +54,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     private MediaPlayer mPlayer;
     private PlayerBinder mBinder;
-    private Playlist mPlayList;
+    private PlayList mPlayList;
 
     private boolean isPaused;
 
@@ -85,7 +85,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mPlayer = new MediaPlayer();
         mPlayer.setOnCompletionListener(this);
 
-        mPlayList = new Playlist();
+        mPlayList = new PlayList();
 
         mBinder = new PlayerBinder();
 
@@ -129,15 +129,15 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         PreferenceUtils.putBoolean(MyApplication.getAppContext(), Constants.PLAY_SERVICE_RUNNING, false);
     }
 
-    public Playlist getPlayList() {
+    public PlayList getPlayList() {
         return mPlayList;
     }
 
-    public void setPlaylist(Playlist mPlayList) {
+    public void setPlaylist(PlayList mPlayList) {
         this.mPlayList = mPlayList;
     }
 
-    public void setPlaylist(Playlist mPlayList, int index) {
+    public void setPlaylist(PlayList mPlayList, int index) {
         this.mPlayList = mPlayList;
         this.mPlayList.setPlayingIndex(index);
     }
@@ -216,7 +216,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         }
     }
 
-    public void play(Playlist list) {
+    public void play(PlayList list) {
         if (list == null) return;
 
         isPaused = false;
@@ -224,7 +224,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         play();
     }
 
-    public void play(Playlist list, int startIndex) {
+    public void play(PlayList list, int startIndex) {
         if (list == null || startIndex < 0 || startIndex >= list.getNumOfSongs()) return;
 
         isPaused = false;

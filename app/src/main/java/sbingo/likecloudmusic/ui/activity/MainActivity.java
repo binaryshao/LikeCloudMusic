@@ -43,7 +43,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.db.LitePalHelper;
@@ -58,7 +58,6 @@ import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
-import sbingo.likecloudmusic.utils.ScreenUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
 
 /**
@@ -102,7 +101,7 @@ public class MainActivity extends BaseActivity
     boolean fromRadioGroup;
 
     private static PlayService mPlayService;
-    private Playlist playlist;
+    private PlayList playlist;
     private int index;
     private boolean playOnceBind;
     private static final long PROGRESS_UPDATE_INTERVAL = 1000;
@@ -227,7 +226,7 @@ public class MainActivity extends BaseActivity
         LitePalHelper.queryCurrentPlaylist()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Playlist>() {
+                .subscribe(new Subscriber<PlayList>() {
                     @Override
                     public void onCompleted() {
 
@@ -240,7 +239,7 @@ public class MainActivity extends BaseActivity
                     }
 
                     @Override
-                    public void onNext(Playlist playlist) {
+                    public void onNext(PlayList playlist) {
                         MainActivity.this.playlist = playlist;
                         bindService(new Intent(MainActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
                     }

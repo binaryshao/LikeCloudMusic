@@ -18,7 +18,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
-import sbingo.likecloudmusic.bean.Playlist;
+import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
@@ -140,12 +140,12 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     }
 
     @Override
-    public void onPlaylistCreated(Playlist playlist, int index) {
+    public void onPlaylistCreated(PlayList playlist, int index) {
         RxBus.getInstance().post(new PlaylistCreatedEvent(playlist, index));
     }
 
     @Override
-    public void onPlaylistDeleted(Playlist playlist) {
+    public void onPlaylistDeleted(PlayList playlist) {
 
     }
 
@@ -161,7 +161,7 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     }
 
     @Override
-    public void playList(Playlist playlist, int index) {
+    public void playList(PlayList playlist, int index) {
         mPresenter.createPlaylist(playlist, index);
     }
 

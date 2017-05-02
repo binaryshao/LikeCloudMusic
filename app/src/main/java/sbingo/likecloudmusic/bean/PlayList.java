@@ -22,7 +22,7 @@ import sbingo.likecloudmusic.player.PlayMode;
  * Date:   2016/12/20
  */
 
-public class Playlist extends DataSupport implements Parcelable {
+public class PlayList extends DataSupport implements Parcelable {
 
     public static final int NO_POSITION = -1;
 
@@ -46,15 +46,15 @@ public class Playlist extends DataSupport implements Parcelable {
 
     private PlayMode playMode = PlayMode.getDefault();
 
-    public Playlist() {
+    public PlayList() {
     }
 
-    public Playlist(Song song) {
+    public PlayList(Song song) {
         songs.add(song);
         numOfSongs = 1;
     }
 
-    public Playlist(Parcel in) {
+    public PlayList(Parcel in) {
         readFromParcel(in);
     }
 
@@ -180,15 +180,15 @@ public class Playlist extends DataSupport implements Parcelable {
         this.currentPlaylist = in.readByte() != 0;
     }
 
-    public static final Creator<Playlist> CREATOR = new Creator<Playlist>() {
+    public static final Creator<PlayList> CREATOR = new Creator<PlayList>() {
         @Override
-        public Playlist createFromParcel(Parcel source) {
-            return new Playlist(source);
+        public PlayList createFromParcel(Parcel source) {
+            return new PlayList(source);
         }
 
         @Override
-        public Playlist[] newArray(int size) {
-            return new Playlist[size];
+        public PlayList[] newArray(int size) {
+            return new PlayList[size];
         }
     };
 
