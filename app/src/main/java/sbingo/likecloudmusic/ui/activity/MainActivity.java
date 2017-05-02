@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -58,6 +59,7 @@ import sbingo.likecloudmusic.ui.adapter.PageAdapter.MainPagerAdapter;
 import sbingo.likecloudmusic.utils.FileUtils;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
+import sbingo.likecloudmusic.utils.TimeUtils;
 import sbingo.likecloudmusic.widget.OutPlayerController;
 
 /**
@@ -94,6 +96,7 @@ public class MainActivity extends BaseActivity
 
     TextView grade;
     TextView theme;
+    TextView timer;
 
     RadioGroup radioGroup;
 
@@ -116,6 +119,8 @@ public class MainActivity extends BaseActivity
     private int timingStopIndex = 0;
     private boolean isStopAfterEnd;
     private String customTime = "假装自定义(5分钟后)";
+    private MyCountDownTimer myCountDownTimer;
+    private boolean finishWhileComplete;
 
     @Override
     public int getLayoutId() {
@@ -195,7 +200,11 @@ public class MainActivity extends BaseActivity
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
-                        setControllerInfo(event.getSong());
+                        if (finishWhileComplete) {
+                            finish();
+                        } else {
+                            setControllerInfo(event.getSong());
+                        }
                     }
                 });
         Subscription startSubscription = RxBus.getInstance().toObservable(StartPlayingEvent.class)
@@ -296,9 +305,11 @@ public class MainActivity extends BaseActivity
         baseNavView = navView;
         grade = (TextView) MenuItemCompat.getActionView(navView.getMenu().findItem(R.id.shop));
         theme = (TextView) MenuItemCompat.getActionView(navView.getMenu().findItem(R.id.theme));
+        timer = (TextView) MenuItemCompat.getActionView(navView.getMenu().findItem(R.id.timing_stop));
 
         grade.setText("100积分");
         theme.setText("典雅黑");
+        timer.setText("");
     }
 
 
@@ -480,7 +491,6 @@ public class MainActivity extends BaseActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -523,7 +533,7 @@ public class MainActivity extends BaseActivity
         tv.setPadding(60, 20, 0, 0);
         tv.setTextSize(16);
         tv.setTextColor(ContextCompat.getColor(this, R.color.black));
-        CharSequence[] items = getResources().getStringArray(R.array.timing_stop);
+        final CharSequence[] items = getResources().getStringArray(R.array.timing_stop);
         items[items.length - 1] = customTime;
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.my_dialog)
                 .setCustomTitle(tv)
@@ -531,8 +541,45 @@ public class MainActivity extends BaseActivity
                 .setSingleChoiceItems(items, timingStopIndex, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        timingStopIndex = which;
-                        dialog.dismiss();
+                        if (which == items.length - 1) {
+                            RemindUtils.showToast("自定义功能尚在开发ing");
+                        } else if (which == 0) {
+                            if (myCountDownTimer != null) {
+                                myCountDownTimer.cancel();
+                                myCountDownTimer = null;
+                            }
+                            timer.setText("");
+                            RemindUtils.showToast("定时停止播放已取消");
+                            dialog.dismiss();
+                        } else {
+                            timingStopIndex = which;
+                            long millisInFuture = 0L;
+                            switch (which) {
+                                case 1:
+                                    millisInFuture = 10 * 60 * 1000;
+                                    break;
+                                case 2:
+                                    millisInFuture = 20 * 60 * 1000;
+                                    break;
+                                case 3:
+                                    millisInFuture = 30 * 60 * 1000;
+                                    break;
+                                case 4:
+                                    millisInFuture = 45 * 60 * 1000;
+                                    break;
+                                case 5:
+                                    millisInFuture = 60 * 60 * 1000;
+                                    break;
+                                default:
+                            }
+                            if (myCountDownTimer != null) {
+                                myCountDownTimer.cancel();
+                            }
+                            myCountDownTimer = new MyCountDownTimer(millisInFuture, 1000);
+                            myCountDownTimer.start();
+                            RemindUtils.showToast(String.format("设置成功，将于%s关闭", items[which]));
+                            dialog.dismiss();
+                        }
                     }
                 })
                 .show();
@@ -548,6 +595,27 @@ public class MainActivity extends BaseActivity
                 }
             }
         });
+    }
+
+    private class MyCountDownTimer extends CountDownTimer {
+
+        MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            timer.setText(TimeUtils.getLeftTime(millisUntilFinished));
+        }
+
+        @Override
+        public void onFinish() {
+            if (isStopAfterEnd && mPlayService.isPlaying()) {
+                finishWhileComplete = true;
+            } else {
+                finish();
+            }
+        }
     }
 
     @OnClick({R.id.setting, R.id.quit})

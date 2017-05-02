@@ -58,6 +58,7 @@ public class TimeUtils {
 
     /**
      * 获取明天
+     *
      * @return
      */
     public static String getTomorrow() {
@@ -80,6 +81,51 @@ public class TimeUtils {
 
     public static boolean isChineseDateType(String date) {
         return date.matches("\\d{2,4}年\\d{1,2}月\\d{1,2}日");
+    }
+
+    /**
+     * @param leftTime
+     * @return 时分秒01:25:58 or 时分12:26
+     */
+    public static String getLeftTime(long leftTime) {
+        final long HOUR = 3600 * 1000;
+        final long MIN = 60 * 1000;
+        final long SEC = 1000;
+        int hour, min, sec;
+        if (leftTime / HOUR >= 1) { //小时差大于1小时
+            hour = (int) (leftTime / HOUR);
+            if (leftTime % HOUR / MIN >= 1) { //分差大于1分钟
+                min = (int) (leftTime % HOUR / MIN);
+            } else {
+                min = 0;
+            }
+            sec = (int) (leftTime % HOUR % MIN / SEC);
+        } else {
+            hour = 0;
+            if (leftTime % HOUR / MIN >= 1) { //分差大于1分钟
+                min = (int) (leftTime % HOUR / MIN);
+            } else {
+                min = 0;
+            }
+            sec = (int) (leftTime % HOUR % MIN / SEC);
+        }
+        String h = hour + "";
+        String m = min + "";
+        String s = sec + "";
+        if (h.length() != 2) {
+            h = "0" + h;
+        }
+        if (m.length() != 2) {
+            m = "0" + m;
+        }
+        if (s.length() != 2) {
+            s = "0" + s;
+        }
+        if (hour > 0) {
+            return h + ":" + m + ":" + s;
+        } else {
+            return m + ":" + s;
+        }
     }
 
 }

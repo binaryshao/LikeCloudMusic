@@ -1,67 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group
-        android:id="@+id/menu_1">
+    <group android:id="@+id/menu_1">
         <item
             android:id="@+id/message"
             android:icon="@drawable/envelop"
-            android:title="@string/message"/>
+            android:title="@string/message" />
         <item
             android:id="@+id/member_center"
             android:icon="@drawable/diamond"
-            android:title="@string/member_center"/>
+            android:title="@string/member_center" />
         <item
             android:id="@+id/shop"
-            app:actionLayout="@layout/menu_text"
             android:icon="@drawable/shop"
-            android:title="@string/shop"/>
+            android:title="@string/shop"
+            app:actionLayout="@layout/menu_text" />
         <item
             android:id="@+id/listen_online"
             android:icon="@drawable/box"
-            android:title="@string/listen_online"/>
+            android:title="@string/listen_online" />
     </group>
 
-    <group
-        android:id="@+id/menu_2">
-        <item android:id="@+id/identify_song"
-              android:icon="@drawable/mic"
-              android:title="@string/identify_song"/>
-
-        <item android:id="@+id/theme"
-              app:actionLayout="@layout/menu_text"
-              android:icon="@drawable/clothes"
-              android:title="@string/theme"/>
-
-        <item android:id="@+id/night_mode"
-              app:actionLayout="@layout/menu_night_switch"
-              android:icon="@drawable/lamp"
-              android:title="@string/night_mode"/>
-
-        <item android:id="@+id/timing_stop"
-              android:icon="@drawable/timing"
-              android:title="@string/timing_stop"/>
-
-        <item android:id="@+id/scan"
-              android:icon="@drawable/scan"
-              android:title="@string/scan"/>
-
-        <item android:id="@+id/music_box"
-              android:icon="@drawable/cloud"
-              android:title="@string/music_box"/>
-
-        <item android:id="@+id/music_clock"
-              android:icon="@drawable/clock"
-              android:title="@string/music_clock"/>
-
-        <item android:id="@+id/driving_mode"
-              android:icon="@drawable/car"
-              android:title="@string/driving_mode"/>
+    <group android:id="@+id/menu_2">
+        <item
+            android:id="@+id/identify_song"
+            android:icon="@drawable/mic"
+            android:title="@string/identify_song" />
 
         <item
-              android:icon="@drawable/cry"
-              android:title="@string/placeholder"/>
+            android:id="@+id/theme"
+            android:icon="@drawable/clothes"
+            android:title="@string/theme"
+            app:actionLayout="@layout/menu_text" />
+
+        <item
+            android:id="@+id/night_mode"
+            android:icon="@drawable/lamp"
+            android:title="@string/night_mode"
+            app:actionLayout="@layout/menu_night_switch" />
+
+        <item
+            android:id="@+id/timing_stop"
+            android:icon="@drawable/timing"
+            android:title="@string/timing_stop"
+            app:actionLayout="@layout/menu_text" />
+
+        <item
+            android:id="@+id/scan"
+            android:icon="@drawable/scan"
+            android:title="@string/scan" />
+
+        <item
+            android:id="@+id/music_box"
+            android:icon="@drawable/cloud"
+            android:title="@string/music_box" />
+
+        <item
+            android:id="@+id/music_clock"
+            android:icon="@drawable/clock"
+            android:title="@string/music_clock" />
+
+        <item
+            android:id="@+id/driving_mode"
+            android:icon="@drawable/car"
+            android:title="@string/driving_mode" />
+
+        <item
+            android:icon="@drawable/cry"
+            android:title="@string/placeholder" />
     </group>
 
 </menu>
