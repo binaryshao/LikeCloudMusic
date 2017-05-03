@@ -3,11 +3,9 @@ package sbingo.likecloudmusic.ui.activity;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 
 /**
@@ -43,11 +41,6 @@ public class LoadingActivity extends BaseActivity {
     @Override
     protected boolean hasToolbar() {
         return false;
-    }
-
-    @Override
-    protected CompositeSubscription provideSubscription() {
-        return null;
     }
 
     @Override

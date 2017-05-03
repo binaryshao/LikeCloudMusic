@@ -1,6 +1,5 @@
 package sbingo.likecloudmusic.ui.fragment.NetMusic;
 
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
 
 /**
@@ -38,8 +37,4 @@ public class RankingFragment extends BaseFragment {
 
     }
 
-    @Override
-    protected CompositeSubscription provideSubscription() {
-        return null;
-    }
 }

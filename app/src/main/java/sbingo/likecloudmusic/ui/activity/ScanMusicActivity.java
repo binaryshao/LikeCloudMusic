@@ -104,12 +104,6 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
         return true;
     }
 
-    @Override
-    protected CompositeSubscription provideSubscription() {
-        return null;
-    }
-
-
     void initPlayerController() {
         playerController.setPlayerListener(this);
         if (PreferenceUtils.getBoolean(this, Constants.HAS_PLAYLIST)) {
@@ -184,12 +178,6 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         mHandler.removeCallbacks(progressCallback);
                     }
                 });
-        mSubscriptions.add(changeSubscription);
-        mSubscriptions.add(createdSubscription);
-        mSubscriptions.add(deletedSubscription);
-        mSubscriptions.add(updateSubscription);
-        mSubscriptions.add(startSubscription);
-        mSubscriptions.add(pauseSubscription);
     }
 
     private void bindToService() {

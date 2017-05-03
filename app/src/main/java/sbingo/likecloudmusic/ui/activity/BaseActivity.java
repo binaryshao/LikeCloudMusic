@@ -17,11 +17,13 @@ import android.widget.CompoundButton;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.common.MyApplication;
+import sbingo.likecloudmusic.contract.BaseContract;
 import sbingo.likecloudmusic.di.component.ActivityComponent;
 import sbingo.likecloudmusic.di.component.DaggerActivityComponent;
 import sbingo.likecloudmusic.di.module.ActivityModule;
@@ -32,7 +34,7 @@ import sbingo.likecloudmusic.utils.PreferenceUtils;
  * Date:   2016/12/11
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends AppCompatActivity {
 
     protected abstract int getLayoutId();
 
@@ -44,10 +46,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract boolean hasToolbar();
 
-    protected abstract CompositeSubscription provideSubscription();
-
-    protected CompositeSubscription mSubscriptions;
-
     protected ActionBar actionBar;
 
     protected ActivityComponent mActivityComponent;
@@ -55,6 +53,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected NavigationView baseNavView;
     protected SwitchCompat nightSwitch;
     protected static boolean isModeChanged;
+
+    @Inject
+    protected T mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,9 +65,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initToolbar();
         customToolbar();
-        mSubscriptions = new CompositeSubscription();
         initActivityComponent();
         initInjector();
+        attachView();
         initViews();
         initNightMode();
     }
@@ -93,6 +94,12 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .applicationComponent(((MyApplication) getApplication()).getApplicationComponent())
                 .activityModule(new ActivityModule(this))
                 .build();
+    }
+
+    private void attachView() {
+        if (mPresenter != null) {
+            mPresenter.attachView(this);
+        }
     }
 
     protected void openActivity(Class a) {
@@ -137,9 +144,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSubscriptions.clear();
-        if (provideSubscription() != null) {
-            provideSubscription().clear();
+        if (mPresenter != null) {
+            mPresenter.detachView();
         }
     }
 }

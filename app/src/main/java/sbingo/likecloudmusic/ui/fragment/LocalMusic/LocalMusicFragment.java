@@ -11,7 +11,6 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.functions.Action1;
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.event.DiskMusicChangeEvent;
 import sbingo.likecloudmusic.event.RxBus;
@@ -86,11 +85,6 @@ public class LocalMusicFragment extends BaseFragment {
         listCount.setText(getResources().getString(R.string.list_count, 9));
         initSwipeRefresh();
         registerDiskMusicEvent();
-    }
-
-    @Override
-    protected CompositeSubscription provideSubscription() {
-        return null;
     }
 
     void initSwipeRefresh() {

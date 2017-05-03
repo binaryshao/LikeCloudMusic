@@ -42,7 +42,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
@@ -224,11 +223,6 @@ public class MainActivity extends BaseActivity
                         mHandler.removeCallbacks(progressCallback);
                     }
                 });
-        mSubscriptions.add(createdSubscription);
-        mSubscriptions.add(deletedSubscription);
-        mSubscriptions.add(updateSubscription);
-        mSubscriptions.add(startSubscription);
-        mSubscriptions.add(pauseSubscription);
     }
 
     private void getPlaylistAndBind() {
@@ -375,11 +369,6 @@ public class MainActivity extends BaseActivity
     @Override
     protected boolean hasToolbar() {
         return true;
-    }
-
-    @Override
-    protected CompositeSubscription provideSubscription() {
-        return null;
     }
 
     @Override

@@ -19,12 +19,10 @@ package sbingo.likecloudmusic.di.component;
 import android.app.Activity;
 import android.content.Context;
 
-
 import dagger.Component;
 import sbingo.likecloudmusic.di.module.ActivityModule;
 import sbingo.likecloudmusic.di.scope.ContextLife;
 import sbingo.likecloudmusic.di.scope.PerActivity;
-import sbingo.likecloudmusic.ui.activity.ScanMusicActivity;
 
 /**
  * Author: Sbingo
@@ -41,7 +39,5 @@ public interface ActivityComponent {
     Context getApplicationContext();
 
     Activity getActivity();
-
-    void inject(ScanMusicActivity scanMusicActivity);
 
 }

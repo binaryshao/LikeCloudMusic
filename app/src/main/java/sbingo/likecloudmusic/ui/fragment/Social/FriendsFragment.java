@@ -1,6 +1,5 @@
 package sbingo.likecloudmusic.ui.fragment.Social;
 
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
 
 /**
@@ -38,8 +37,4 @@ public class FriendsFragment extends BaseFragment {
 
     }
 
-    @Override
-    protected CompositeSubscription provideSubscription() {
-        return null;
-    }
 }

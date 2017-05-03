@@ -14,13 +14,14 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.common.MyApplication;
+import sbingo.likecloudmusic.contract.BaseContract;
 import sbingo.likecloudmusic.di.component.DaggerFragmentComponent;
 import sbingo.likecloudmusic.di.component.FragmentComponent;
 import sbingo.likecloudmusic.di.module.FragmentModule;
-import sbingo.likecloudmusic.utils.RemindUtils;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -29,17 +30,14 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
  * Date:   2016/12/12
  */
 
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment<T extends BaseContract.BasePresenter> extends Fragment {
 
-    protected CompositeSubscription mSubscriptions;
 
     protected abstract int getLayoutId();
 
     protected abstract void initInjector();
 
     protected abstract void initViews();
-
-    protected abstract CompositeSubscription provideSubscription();
 
     protected Context mContext;
 
@@ -51,11 +49,13 @@ public abstract class BaseFragment extends Fragment {
 
     private PermissionListener mPermissionListener;
 
+    @Inject
+    protected T mPresenter;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.mContext = context;
-        mSubscriptions = new CompositeSubscription();
     }
 
     @Nullable
@@ -66,6 +66,7 @@ public abstract class BaseFragment extends Fragment {
             ButterKnife.bind(this, mFragmentView);
             initFragmentComponent();
             initInjector();
+            attachView();
             initViews();
         }
         return mFragmentView;
@@ -76,6 +77,12 @@ public abstract class BaseFragment extends Fragment {
                 .applicationComponent(((MyApplication) getActivity().getApplication()).getApplicationComponent())
                 .fragmentModule(new FragmentModule(this))
                 .build();
+    }
+
+    private void attachView() {
+        if (mPresenter != null) {
+            mPresenter.attachView(this);
+        }
     }
 
     protected void openActivity(Class a) {
@@ -132,9 +139,8 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mSubscriptions.clear();
-        if (provideSubscription() != null) {
-            provideSubscription().clear();
+        if (mPresenter != null) {
+            mPresenter.detachView();
         }
     }
 }

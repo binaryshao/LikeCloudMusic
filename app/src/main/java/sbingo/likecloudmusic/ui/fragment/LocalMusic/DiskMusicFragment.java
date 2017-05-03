@@ -12,21 +12,16 @@ import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.OnClick;
-import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.bean.PlayList;
 import sbingo.likecloudmusic.bean.Song;
 import sbingo.likecloudmusic.common.Constants;
-import sbingo.likecloudmusic.event.PlaylistCreatedEvent;
-import sbingo.likecloudmusic.event.RxBus;
+import sbingo.likecloudmusic.contract.DiskMusicContract;
 import sbingo.likecloudmusic.presenter.DiskMusicPresenter;
 import sbingo.likecloudmusic.ui.adapter.RvAdapter.DiskMusicAdapter;
 import sbingo.likecloudmusic.ui.fragment.BaseFragment;
-import sbingo.likecloudmusic.ui.view.DiskMusicView;
 import sbingo.likecloudmusic.utils.PreferenceUtils;
 import sbingo.likecloudmusic.utils.RemindUtils;
 
@@ -35,7 +30,7 @@ import sbingo.likecloudmusic.utils.RemindUtils;
  * Date:   2016/12/15
  */
 
-public class DiskMusicFragment extends BaseFragment implements DiskMusicView, DiskMusicAdapter.DiskMusicListener {
+public class DiskMusicFragment extends BaseFragment<DiskMusicPresenter> implements DiskMusicContract.View, DiskMusicAdapter.DiskMusicListener {
 
     @BindView(R.id.r_view)
     RecyclerView rView;
@@ -49,9 +44,6 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     private int currentType;
     private DiskMusicAdapter mAdapter;
 
-    @Inject
-    DiskMusicPresenter mPresenter;
-
     @Override
     protected int getLayoutId() {
         return R.layout.disk_music_layout;
@@ -60,7 +52,6 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     @Override
     protected void initInjector() {
         mFragmentComponent.inject(this);
-        mPresenter.attachView(this);
     }
 
     @Override
@@ -74,7 +65,8 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
         if (currentType == 1) {
             if (PreferenceUtils.getBoolean(getActivity(), Constants.IS_SCANNED)) {
                 Logger.d("loadMusicFromDB");
-                mPresenter.loadMusicFromDB();
+                progressBar.setVisibility(View.VISIBLE);
+                mPresenter.loadSongFromDB();
             } else {
                 Logger.d("loadMusicFromDisk");
                 scanDiskMusic();
@@ -82,15 +74,11 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
         }
     }
 
-    @Override
-    protected CompositeSubscription provideSubscription() {
-        return mPresenter.provideSubscription();
-    }
-
     public void scanDiskMusic() {
         checkPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, new PermissionListener() {
             @Override
             public void onGranted() {
+                progressBar.setVisibility(View.VISIBLE);
                 mPresenter.loadMusicFromDisk();
             }
 
@@ -103,45 +91,26 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
     }
 
     @Override
-    public void showLoading() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideLoading() {
-        progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void showMsg(String msg) {
-        RemindUtils.showToast(msg);
-    }
-
-    @Override
     public void onMusicLoaded(List<Song> songs) {
         mAdapter.setList(songs);
         //似乎加载太快导致看不到进度条，手动延长进度条时间……
         progressBar.postDelayed(new Runnable() {
             @Override
             public void run() {
-                hideLoading();
+                progressBar.setVisibility(View.GONE);
             }
         }, 2000);
     }
 
     @Override
     public void showEmptyView() {
+        progressBar.setVisibility(View.GONE);
         emptyView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideEmptyView() {
         emptyView.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onPlaylistCreated(PlayList playlist, int index) {
-        RxBus.getInstance().post(new PlaylistCreatedEvent(playlist, index));
     }
 
     @Override
@@ -165,4 +134,14 @@ public class DiskMusicFragment extends BaseFragment implements DiskMusicView, Di
         mPresenter.createPlaylist(playlist, index);
     }
 
+    @Override
+    public void onError(String err) {
+        RemindUtils.showToast(err);
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onCompleted() {
+        progressBar.setVisibility(View.GONE);
+    }
 }
