@@ -20,6 +20,8 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.R;
 import sbingo.likecloudmusic.common.Constants;
 import sbingo.likecloudmusic.common.MyApplication;
@@ -56,6 +58,8 @@ public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends
 
     @Inject
     protected T mPresenter;
+
+    private CompositeSubscription mCompositeSubscription;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,9 +145,23 @@ public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends
         PreferenceUtils.putBoolean(this, Constants.IS_NIGHT, false);
     }
 
+    private void unSubscribe() {
+        if (mCompositeSubscription != null) {
+            mCompositeSubscription.unsubscribe();
+        }
+    }
+
+    protected void addSubscribe(Subscription subscription) {
+        if (mCompositeSubscription == null) {
+            mCompositeSubscription = new CompositeSubscription();
+        }
+        mCompositeSubscription.add(subscription);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unSubscribe();
         if (mPresenter != null) {
             mPresenter.detachView();
         }

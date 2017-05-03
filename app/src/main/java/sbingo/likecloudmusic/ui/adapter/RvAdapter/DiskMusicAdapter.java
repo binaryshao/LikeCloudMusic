@@ -54,7 +54,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
         this.listener = listener;
         this.mContext = mContext;
 
-        RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+        addSubscribe(RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
@@ -62,7 +62,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
                         mList.get(event.getIndex()).setPlaying(true);
                         currentPlayingIndex = event.getIndex();
                     }
-                });
+                }));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class DiskMusicAdapter extends BaseRvAdapter<Song> {
                             LitePalHelper.deleteSong(song);
                             deleteItem(position);
                             if (getItemCount() == 0) {
-                                ((DiskMusicFragment)listener).showEmptyView();
+                                ((DiskMusicFragment) listener).showEmptyView();
                             }
                             return;
                         }

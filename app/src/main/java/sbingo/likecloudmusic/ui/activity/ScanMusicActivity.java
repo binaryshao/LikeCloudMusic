@@ -113,7 +113,7 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
     }
 
     void registerEvents() {
-        Subscription changeSubscription = RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
+        addSubscribe(RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
                 .subscribe(new Action1<DiskMusicChangeEvent>() {
                     @Override
                     public void call(DiskMusicChangeEvent event) {
@@ -121,8 +121,8 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         diskMusicFragments[2].onMusicLoaded(event.getSongs());
                         diskMusicFragments[3].onMusicLoaded(event.getSongs());
                     }
-                });
-        Subscription createdSubscription = RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
                     @Override
                     public void call(PlaylistCreatedEvent event) {
@@ -146,22 +146,22 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         }
                         PreferenceUtils.putBoolean(ScanMusicActivity.this, Constants.HAS_PLAYLIST, true);
                     }
-                });
-        Subscription deletedSubscription = RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
                 .subscribe(new Action1<PlaylistDeletedEvent>() {
                     @Override
                     public void call(PlaylistDeletedEvent event) {
                         playerController.setVisibility(View.GONE);
                     }
-                });
-        Subscription updateSubscription = RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
                         setControllerInfo(event.getSong());
                     }
-                });
-        Subscription startSubscription = RxBus.getInstance().toObservable(StartPlayingEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(StartPlayingEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<StartPlayingEvent>() {
                     @Override
@@ -169,21 +169,20 @@ public class ScanMusicActivity extends BaseActivity implements OutPlayerControll
                         setControllerInfo(mPlayService.getPlayList().getCurrentSong());
                         mHandler.post(progressCallback);
                     }
-                });
-        Subscription pauseSubscription = RxBus.getInstance().toObservable(PausePlayingEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(PausePlayingEvent.class)
                 .subscribe(new Action1<PausePlayingEvent>() {
                     @Override
                     public void call(PausePlayingEvent event) {
                         playerController.setPlaying(false);
                         mHandler.removeCallbacks(progressCallback);
                     }
-                });
+                }));
     }
 
     private void bindToService() {
         bindService(new Intent(ScanMusicActivity.this, PlayService.class), mConnection, BIND_AUTO_CREATE);
     }
-
 
     void initViewPager() {
         viewPager.setAdapter(new LocalPagerAdapter(getSupportFragmentManager(), createFragments()));

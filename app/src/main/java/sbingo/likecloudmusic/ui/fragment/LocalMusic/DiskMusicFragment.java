@@ -144,4 +144,10 @@ public class DiskMusicFragment extends BaseFragment<DiskMusicPresenter> implemen
     public void onCompleted() {
         progressBar.setVisibility(View.GONE);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mAdapter.unSubscribe();
+    }
 }

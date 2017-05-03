@@ -12,7 +12,7 @@ import sbingo.likecloudmusic.contract.BaseContract;
 public class RxPresenter<T extends BaseContract.BaseView> implements BaseContract.BasePresenter<T> {
 
     protected T mView;
-    protected CompositeSubscription mCompositeSubscription;
+    private CompositeSubscription mCompositeSubscription;
 
     @Override
     public void attachView(T view) {

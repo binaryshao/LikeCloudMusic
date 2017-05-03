@@ -38,7 +38,6 @@ import com.orhanobut.logger.Logger;
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -168,7 +167,7 @@ public class MainActivity extends BaseActivity
 
     void registerEvents() {
         //之后将有多处界面可以发出PlaylistCreatedEvent事件
-        Subscription createdSubscription = RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
+        addSubscribe(RxBus.getInstance().toObservable(PlaylistCreatedEvent.class)
                 .subscribe(new Action1<PlaylistCreatedEvent>() {
                     @Override
                     public void call(PlaylistCreatedEvent event) {
@@ -187,15 +186,15 @@ public class MainActivity extends BaseActivity
                         }
                         PreferenceUtils.putBoolean(MainActivity.this, Constants.HAS_PLAYLIST, true);
                     }
-                });
-        Subscription deletedSubscription = RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(PlaylistDeletedEvent.class)
                 .subscribe(new Action1<PlaylistDeletedEvent>() {
                     @Override
                     public void call(PlaylistDeletedEvent event) {
                         playerController.setVisibility(View.GONE);
                     }
-                });
-        Subscription updateSubscription = RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(PlayingMusicUpdateEvent.class)
                 .subscribe(new Action1<PlayingMusicUpdateEvent>() {
                     @Override
                     public void call(PlayingMusicUpdateEvent event) {
@@ -205,8 +204,8 @@ public class MainActivity extends BaseActivity
                             setControllerInfo(event.getSong());
                         }
                     }
-                });
-        Subscription startSubscription = RxBus.getInstance().toObservable(StartPlayingEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(StartPlayingEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<StartPlayingEvent>() {
                     @Override
@@ -214,15 +213,15 @@ public class MainActivity extends BaseActivity
                         setControllerInfo(mPlayService.getPlayList().getCurrentSong());
                         mHandler.post(progressCallback);
                     }
-                });
-        Subscription pauseSubscription = RxBus.getInstance().toObservable(PausePlayingEvent.class)
+                }));
+        addSubscribe(RxBus.getInstance().toObservable(PausePlayingEvent.class)
                 .subscribe(new Action1<PausePlayingEvent>() {
                     @Override
                     public void call(PausePlayingEvent event) {
                         playerController.setPlaying(false);
                         mHandler.removeCallbacks(progressCallback);
                     }
-                });
+                }));
     }
 
     private void getPlaylistAndBind() {

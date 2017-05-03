@@ -17,6 +17,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 import sbingo.likecloudmusic.common.MyApplication;
 import sbingo.likecloudmusic.contract.BaseContract;
 import sbingo.likecloudmusic.di.component.DaggerFragmentComponent;
@@ -51,6 +53,8 @@ public abstract class BaseFragment<T extends BaseContract.BasePresenter> extends
 
     @Inject
     protected T mPresenter;
+
+    private CompositeSubscription mCompositeSubscription;
 
     @Override
     public void onAttach(Context context) {
@@ -136,9 +140,23 @@ public abstract class BaseFragment<T extends BaseContract.BasePresenter> extends
         void onDenied(List<String> permissions);
     }
 
+    private void unSubscribe() {
+        if (mCompositeSubscription != null) {
+            mCompositeSubscription.unsubscribe();
+        }
+    }
+
+    protected void addSubscribe(Subscription subscription) {
+        if (mCompositeSubscription == null) {
+            mCompositeSubscription = new CompositeSubscription();
+        }
+        mCompositeSubscription.add(subscription);
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        unSubscribe();
         if (mPresenter != null) {
             mPresenter.detachView();
         }

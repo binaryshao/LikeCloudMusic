@@ -103,13 +103,13 @@ public class LocalMusicFragment extends BaseFragment {
     }
 
     void registerDiskMusicEvent() {
-        RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
+        addSubscribe(RxBus.getInstance().toObservable(DiskMusicChangeEvent.class)
                 .subscribe(new Action1<DiskMusicChangeEvent>() {
                     @Override
                     public void call(DiskMusicChangeEvent musicChangeEvent) {
                         local.setCount(musicChangeEvent.getCount());
                     }
-                });
+                }));
     }
 
     @OnClick({R.id.local, R.id.recent, R.id.download, R.id.my_singers, R.id.mv, R.id.list_more, R.id.play_list})
