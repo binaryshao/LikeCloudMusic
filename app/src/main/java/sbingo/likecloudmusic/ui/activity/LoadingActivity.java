@@ -1,9 +1,12 @@
 package sbingo.likecloudmusic.ui.activity;
 
+import android.animation.Animator;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import butterknife.BindView;
 import sbingo.likecloudmusic.R;
@@ -18,6 +21,8 @@ public class LoadingActivity extends BaseActivity {
 
     @BindView(R.id.loading_text)
     TextView loadingText;
+    @BindView(R.id.lottie_view)
+    LottieAnimationView lottieView;
 
     @Override
     public int getLayoutId() {
@@ -46,7 +51,28 @@ public class LoadingActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadingText.postDelayed(loadingOut, 1000);
+//        loadingText.postDelayed(loadingOut, 1000);
+        lottieView.addAnimatorListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                loadingText.post(toMainActivity);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
     }
 
     Runnable loadingOut = new Runnable() {

@@ -38,5 +38,6 @@ dependencies {
     compile 'com.google.dagger:dagger:2.4'
     apt 'com.google.dagger:dagger-compiler:2.4'
     compile 'org.litepal.android:core:1.4.1'
+    compile 'com.airbnb.android:lottie:2.0.0-beta4'
     compile project(':mylibrary')
 }
