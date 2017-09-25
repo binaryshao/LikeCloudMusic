@@ -26,6 +26,19 @@ public abstract class BaseRvAdapter<T> extends RecyclerView.Adapter<RecyclerView
      * 默认为单选模式
      */
     protected boolean isSingleChoice = true;
+    /**
+     * 单个项目是否最多选一次
+     */
+    protected boolean isMaxOne = true;
+    /**
+     * 上次保存的选项
+     */
+    protected Map<Integer, Boolean> lastcheckedMap;
+    /**
+     * 是否需要确定后才保存选中项
+     * 默认只有多选才需要设置
+     */
+    protected boolean isNeedConfirmToSave = false;
 
     private CompositeSubscription mCompositeSubscription;
 
@@ -57,9 +70,38 @@ public abstract class BaseRvAdapter<T> extends RecyclerView.Adapter<RecyclerView
     protected void itemChecked(int position) {
         if (isSingleChoice) {
             setChecked(position);
-        } else {
+        } else if (isMaxOne) {
+            saveLastCheckedMap();
             switchCheckedStatus(position);
+        } else if (checkedMap.get(position) == null || !checkedMap.get(position)) {
+            saveLastCheckedMap();
+            checkedMap.put(position, true);
         }
+    }
+
+    private void saveLastCheckedMap() {
+        if (isNeedConfirmToSave && lastcheckedMap == null) {
+            lastcheckedMap = new HashMap<>();
+            for (int i = 0; i < mList.size(); i++) {
+                lastcheckedMap.put(i, checkedMap.get(i) == null ? false : checkedMap.get(i));
+            }
+        }
+    }
+
+    /**
+     * 确定保存
+     */
+    public void confirmSave(boolean confirm) {
+        if (lastcheckedMap != null) {
+            if (!confirm) {
+                for (int i = 0; i < mList.size(); i++) {
+                    checkedMap.put(i, lastcheckedMap.get(i) == null ? false : lastcheckedMap.get(i));
+                }
+            }
+            lastcheckedMap.clear();
+            lastcheckedMap = null;
+        }
+        notifyDataSetChanged();
     }
 
     /**
@@ -84,10 +126,10 @@ public abstract class BaseRvAdapter<T> extends RecyclerView.Adapter<RecyclerView
      * @param position
      */
     private void switchCheckedStatus(int position) {
-        if (checkedMap.get(position)) {
-            checkedMap.put(position, false);
-        } else {
+        if (checkedMap.get(position) == null || !checkedMap.get(position)) {
             checkedMap.put(position, true);
+        } else {
+            checkedMap.put(position, false);
         }
         notifyItemChanged(position);
     }
@@ -100,7 +142,7 @@ public abstract class BaseRvAdapter<T> extends RecyclerView.Adapter<RecyclerView
     public List<Integer> getCheckedPositions() {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < checkedMap.size(); i++) {
-            if (checkedMap.get(i)) {
+            if (checkedMap.get(i) != null && checkedMap.get(i)) {
                 list.add(i);
             }
         }
