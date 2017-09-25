@@ -68,6 +68,7 @@ public abstract class BaseRvAdapter<T> extends RecyclerView.Adapter<RecyclerView
      * @param position
      */
     protected void itemChecked(int position) {
+        initCheckedMap();
         if (isSingleChoice) {
             setChecked(position);
         } else if (isMaxOne) {
@@ -76,6 +77,17 @@ public abstract class BaseRvAdapter<T> extends RecyclerView.Adapter<RecyclerView
         } else if (checkedMap.get(position) == null || !checkedMap.get(position)) {
             saveLastCheckedMap();
             checkedMap.put(position, true);
+        }
+    }
+
+    /**
+     * 确保checkedMap每一项都有值
+     */
+    private void initCheckedMap() {
+        for (int i = 0; i < mList.size(); i++) {
+            if (checkedMap.get(i) == null) {
+                checkedMap.put(i, false);
+            }
         }
     }
 
