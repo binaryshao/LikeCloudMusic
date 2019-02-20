@@ -1,4 +1,4 @@
-###**LikeCloudMusic 云音**
+### LikeCloudMusic 云音
 仿网易云音乐v3.7.5，Material Design风格，基于MVP，使用RxBus作为事件总线通信库
 
 LikeCloudMusic中的Like有两层意思
@@ -9,7 +9,7 @@ LikeCloudMusic中的Like有两层意思
 
 本项目仅用于技术学习交流，不得用于其他用途。
 
-###**效果图**
+### 效果图
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/gif/LikeCloudMusic.gif)
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/Screenshot/2.png)
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/Screenshot/4.png)
@@ -18,7 +18,7 @@ LikeCloudMusic中的Like有两层意思
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/Screenshot/9.png)
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/Screenshot/12.png)
 ![这里写图片描述](https://github.com/Sbingo/LikeCloudMusic/blob/master/Screenshot/13.png)
-###**目前功能**
+### 目前功能
 
 扫描本地歌曲
 
@@ -37,7 +37,7 @@ LikeCloudMusic中的Like有两层意思
 夜间模式
 
 ……
-###**TODO**
+### TODO
 
 通知栏底色可选
 
@@ -58,7 +58,7 @@ LikeCloudMusic中的Like有两层意思
 server端
 
 ……
-###**主要用到的开源库**
+### 主要用到的开源库
 
 Butterknife
 
