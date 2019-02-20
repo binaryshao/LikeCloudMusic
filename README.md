@@ -1,5 +1,5 @@
 ### LikeCloudMusic 云音
-仿网易云音乐v3.7.5，Material Desig n风格，基于 MVP，使用 RxBus 作为事件总线通信库
+仿网易云音乐v3.7.5，Material Design 风格，基于 MVP，使用 RxBus 作为事件总线通信库
 
 LikeCloudMusic 中的 Like 有两层意思
 
@@ -51,11 +51,11 @@ LikeCloudMusic 中的 Like 有两层意思
 
 本地音乐其他分类
 
-播放界面UI及逻辑
+播放界面 UI 及逻辑
 
 歌词滚动显示
 
-server端
+server 端
 
 ……
 ### 主要用到的开源库
