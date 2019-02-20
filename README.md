@@ -1,9 +1,9 @@
 ### LikeCloudMusic 云音
-仿网易云音乐v3.7.5，Material Design风格，基于MVP，使用RxBus作为事件总线通信库
+仿网易云音乐v3.7.5，Material Desig n风格，基于 MVP，使用 RxBus 作为事件总线通信库
 
-LikeCloudMusic中的Like有两层意思
+LikeCloudMusic 中的 Like 有两层意思
 
-1.喜欢，正因为喜欢网易云音乐这款APP，才有了该项目。
+1.喜欢，正因为喜欢网易云音乐这款 APP，才有了该项目。
 
 2.像、类似，表明该项目是对云音乐的仿造。
 
