@@ -1,5 +1,5 @@
 ### LikeCloudMusic 云音
-仿网易云音乐v3.7.5，Material Design 风格，基于 MVP，使用 RxBus 作为事件总线通信库
+仿网易云音乐 v3.7.5，Material Design 风格，基于 MVP，使用 RxBus 作为事件总线通信库
 
 LikeCloudMusic 中的 Like 有两层意思
 
