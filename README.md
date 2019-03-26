@@ -77,7 +77,7 @@ Glide
 LitePal
 
 ### 公众号
-![as彬哥六六六](https://s2.ax1x.com/2019/03/26/AUooOs.jpg)
+![as彬哥六六六](https://s2.ax1x.com/2019/03/26/AUooOs.md.jpg)
 
 License
 ---------------
